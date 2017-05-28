@@ -17,6 +17,12 @@ from deepsleep.model import DeepFeatureNet, DeepSleepNet
 from deepsleep.optimize import adam, adam_clipping_list_lr
 from deepsleep.utils import iterate_minibatches, iterate_batch_seq_minibatches
 
+from tensorlayer.db import TensorDB
+from tensorlayer.db import JobStatus
+
+
+db = TensorDB(ip='146.169.33.34', port=27020, db_name='DeepSleepNet', user_name='tensorlayer', password='Tensorlayer123', studyID='1')
+
 
 class Trainer(object):
 
@@ -355,6 +361,25 @@ class DeepFeatureNetTrainer(Trainer):
                 valid_cm = confusion_matrix(y_true_val, y_pred_val)
                 valid_acc = np.mean(y_true_val == y_pred_val)
                 valid_f1 = f1_score(y_true_val, y_pred_val, average="macro")
+
+                db.train_log(args={
+                    "n_folds": self.n_folds,
+                    "fold_idx": self.fold_idx,
+                    "epoch": epoch,
+                    "train_step": "pretraining",
+                    "datetime": datetime.utcnow(),
+                    "model": train_net.name,
+                    "n_train_examples": n_train_examples,
+                    "n_valid_examples": n_valid_examples,
+                    "train_loss": train_loss,
+                    "train_acc": train_acc,
+                    "train_f1": train_f1,
+                    "train_duration": train_duration,
+                    "valid_loss": valid_loss,
+                    "valid_acc": valid_acc,
+                    "valid_f1": valid_f1,
+                    "valid_duration": valid_duration,
+                })
 
                 all_train_loss[epoch] = train_loss
                 all_train_acc[epoch] = train_acc
@@ -710,6 +735,25 @@ class DeepSleepNetTrainer(Trainer):
                 all_valid_loss[epoch] = valid_loss
                 all_valid_acc[epoch] = valid_acc
                 all_valid_f1[epoch] = valid_f1
+
+                db.train_log(args={
+                    "n_folds": self.n_folds,
+                    "fold_idx": self.fold_idx,
+                    "epoch": epoch,
+                    "train_step": "finetuning",
+                    "datetime": datetime.utcnow(),
+                    "model": train_net.name,
+                    "n_train_examples": n_train_examples,
+                    "n_valid_examples": n_valid_examples,
+                    "train_loss": train_loss,
+                    "train_acc": train_acc,
+                    "train_f1": train_f1,
+                    "train_duration": train_duration,
+                    "valid_loss": valid_loss,
+                    "valid_acc": valid_acc,
+                    "valid_f1": valid_f1,
+                    "valid_duration": valid_duration,
+                })
 
                 # Report performance
                 self.print_performance(

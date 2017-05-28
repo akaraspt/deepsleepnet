@@ -177,6 +177,10 @@ def batch_norm(name, input_var, is_train, decay=0.999, epsilon=1e-5):
 
 
 def batch_norm_new(name, input_var, is_train, decay=0.999, epsilon=1e-5):
+    """Batch normalization modified from BatchNormLayer in Tensorlayer.
+    Source: <https://github.com/zsdonghao/tensorlayer/blob/master/tensorlayer/layers.py#L2190>
+    """
+
     inputs_shape = input_var.get_shape()
     axis = list(range(len(inputs_shape) - 1))
     params_shape = inputs_shape[-1:]
