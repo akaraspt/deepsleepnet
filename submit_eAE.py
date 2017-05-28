@@ -11,17 +11,17 @@ def main():
     if is_alive != 200:
         raise Exception("!!!")
 
-    # Get all jobs
+    # Initialize input argument for each node in the eAE cluster
     args = ['--data_dir data/eeg_fpz_cz --output_dir results --n_folds 20 --fold_idx {} --pretrain_epochs 100 --finetune_epochs 200'.format(fold_idx) for fold_idx in range(20)]
 
-    # We submit a dummy job
+    # Submit a job
     parameters_set = "\n".join(args)
     cluster = "gpu"
     computation_type = "GPU"
     main_file = "train.py"
     data_files = ['deepsleep', 'tensorlayer', 'data/eeg_fpz_cz']
-    host_ip = "dsigpu2.ict-doc.ic.ac.uk"
-    ssh_port = "22222"
+    host_ip = "host_ip_address"     # IP address of the machine to run this script
+    ssh_port = "ssh_port"           # Port for ssh
     job = eae.submit_jobs(parameters_set, cluster, computation_type, main_file, data_files, host_ip, ssh_port)
     print(job)
 

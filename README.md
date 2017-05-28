@@ -1,5 +1,5 @@
-# DeepSleep #
-A deep learning model for automatic sleep stage scoring based on raw, single-channel EEG. This repository
+# DeepSleepNet #
+A deep learning model for automatic sleep stage scoring based on raw, single-channel EEG.
 
 Code for reproducing key results in the paper [DeepSleepNet: a Model for Automatic Sleep Stage Scoring based on Raw Single-Channel EEG](https://arxiv.org/abs/1703.04046) by Akara Supratak, Hao Dong, Chao Wu, Yike Guo.
 
@@ -8,9 +8,11 @@ Code for reproducing key results in the paper [DeepSleepNet: a Model for Automat
 - Ubuntu 16.04
 - CUDA toolkit 8.0 and CuDNN v5
 - [tensorflow-gpu (0.12.1)](https://www.tensorflow.org/versions/r0.12/get_started/os_setup)
+- [tensorlayer](https://github.com/zsdonghao/tensorlayer)
 - matplotlib
 - scikit-learn
 - scipy
+- [eAE](https://github.com/aoehmichen/eae-docker) (optional)
 
 
 ## Prepare dataset ##
@@ -52,6 +54,15 @@ The output will be stored in numpy files.
 Run this script to show a summary of the performance of our DeepSleepNet compared with the state-of-the-art hand-engineering approaches. The performance metrics are overall accuracy, per-class F1-score, and macro F1-score.
 
     python summary.py --data_dir output
+
+
+## Submit the job to the eAE cluster equipped with TensorLayer ##
+
+1. Setup an eAE cluster (follows the instruction in this [link](https://github.com/aoehmichen/eae-docker))
+2. Setup a MongoDB
+3. Change location of MongoDB in `deepsleep/trainer.py`
+4. Modify `submit_eAE.py`
+5. Run `python submit_eAE.py`
 
 
 ## Citation ##
