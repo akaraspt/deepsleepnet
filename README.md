@@ -1,7 +1,7 @@
 # DeepSleepNet #
 A deep learning model for automatic sleep stage scoring based on raw, single-channel EEG.
 
-Code for reproducing key results in the paper [DeepSleepNet: a Model for Automatic Sleep Stage Scoring based on Raw Single-Channel EEG](https://arxiv.org/abs/1703.04046) by Akara Supratak, Hao Dong, Chao Wu, Yike Guo.
+Code for the model in the paper [DeepSleepNet: a Model for Automatic Sleep Stage Scoring based on Raw Single-Channel EEG](https://arxiv.org/abs/1703.04046) by Akara Supratak, Hao Dong, Chao Wu, Yike Guo. This code evaluates the model on different dataset mentioned in the paper.
 
 
 ## Environment ##
