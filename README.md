@@ -1,11 +1,12 @@
 # DeepSleepNet #
 A deep learning model for automatic sleep stage scoring based on raw, single-channel EEG.
 
-Code for the model in the paper [DeepSleepNet: a Model for Automatic Sleep Stage Scoring based on Raw Single-Channel EEG](https://arxiv.org/abs/1703.04046) by Akara Supratak, Hao Dong, Chao Wu, Yike Guo. This code evaluates the model on different dataset mentioned in the paper.
+Code for the model in the paper [DeepSleepNet: a Model for Automatic Sleep Stage Scoring based on Raw Single-Channel EEG](https://arxiv.org/abs/1703.04046) by Akara Supratak, Hao Dong, Chao Wu, Yike Guo.
 
 
 ## Environment ##
 - Ubuntu 16.04
+- MongoDB
 - CUDA toolkit 8.0 and CuDNN v5
 - [tensorflow-gpu (0.12.1)](https://www.tensorflow.org/versions/r0.12/get_started/os_setup)
 - [tensorlayer](https://github.com/zsdonghao/tensorlayer)
@@ -63,6 +64,10 @@ Run this script to show a summary of the performance of our DeepSleepNet compare
 3. Change location of MongoDB in `deepsleep/trainer.py`
 4. Modify `submit_eAE.py`
 5. Run `python submit_eAE.py`
+
+
+## ToDo ##
+- Release a version that does not depend on MongoDB and Tensorlayer (easier to install, but could take longer time for training).
 
 
 ## Citation ##
