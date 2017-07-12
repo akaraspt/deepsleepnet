@@ -76,7 +76,8 @@ If you find this useful, please cite our work as follows:
     @article{Supratak2017,
         title = {{DeepSleepNet: a Model for Automatic Sleep Stage Scoring based on Raw Single-Channel EEG}},
         author = {Supratak, Akara and Dong, Hao and Wu, Chao and Guo, Yike},
-        journal = {arXiv preprint arXiv:1703.04046},
-        year = {2017}
-        pages = {1--10},
+        journal = {IEEE Transactions on Neural Systems and Rehabilitation Engineering},
+        year = {2017},
+        doi={10.1109/TNSRE.2017.2721116}, 
+        ISSN={1534-4320}, 
     }
