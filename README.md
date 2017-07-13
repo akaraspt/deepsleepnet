@@ -85,3 +85,7 @@ If you find this useful, please cite our work as follows:
         doi={10.1109/TNSRE.2017.2721116}, 
         ISSN={1534-4320}, 
     }
+
+## Licence ##
+- For academic and non-commercial use only.
+- Apache License 2.0
