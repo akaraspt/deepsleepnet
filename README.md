@@ -7,11 +7,18 @@ This work has been accepted for publication in [IEEE Transactions on Neural Syst
 
 You can also find our accepted version before the publication in [arXiv](https://arxiv.org/abs/1703.04046).
 
+The architecture of DeepSleepNet:
+![DeepSleepNet](./img/deepsleepnet.png)
+Note: Fs is the sampling rate of the input EEG signals
+
+This figure illustrates one interpretable LSTM cell from the model, which learn to keep track when each subject is awake (i.e., in W stage):
+![Sleep Onset Cell](./img/sleep_onset_cell.png)
 
 ## Environment ##
 - Ubuntu 16.04
 - MongoDB
 - CUDA toolkit 8.0 and CuDNN v5
+- Python 2.7
 - [tensorflow-gpu (0.12.1)](https://www.tensorflow.org/versions/r0.12/get_started/os_setup)
 - [tensorlayer](https://github.com/zsdonghao/tensorlayer)
 - matplotlib
