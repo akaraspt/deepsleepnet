@@ -85,7 +85,7 @@ Run this script to show a summary of the performance of our DeepSleepNet compare
 If you find this useful, please cite our work as follows:
 
     @article{Supratak2017,
-        title = {{DeepSleepNet: a Model for Automatic Sleep Stage Scoring based on Raw Single-Channel EEG}},
+        title = {DeepSleepNet: a Model for Automatic Sleep Stage Scoring based on Raw Single-Channel EEG},
         author = {Supratak, Akara and Dong, Hao and Wu, Chao and Guo, Yike},
         journal = {IEEE Transactions on Neural Systems and Rehabilitation Engineering},
         year = {2017},
