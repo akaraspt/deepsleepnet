@@ -24,6 +24,7 @@ This figure illustrates one interpretable LSTM cell from the model, which learn 
 - matplotlib
 - scikit-learn
 - scipy
+- pandas
 - [eAE](https://github.com/aoehmichen/eae-docker) (optional)
 
 
