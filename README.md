@@ -90,10 +90,14 @@ If you find this useful, please cite our work as follows:
         author = {Supratak, Akara and Dong, Hao and Wu, Chao and Guo, Yike},
         journal = {IEEE Transactions on Neural Systems and Rehabilitation Engineering},
         year = {2017},
-        doi={10.1109/TNSRE.2017.2721116}, 
-        ISSN={1534-4320}, 
+        month = {Nov},
+        volume = {25}, 
+        number = {11}, 
+        pages = {1998-2008}, 
+        doi = {10.1109/TNSRE.2017.2721116}, 
+        ISSN = {1534-4320}, 
     }
 
 ## Licence ##
-- For academic and non-commercial use only.
+- For academic and non-commercial use only
 - Apache License 2.0
