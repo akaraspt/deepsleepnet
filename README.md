@@ -22,7 +22,8 @@ This figure illustrates one interpretable LSTM cell from the model, which learn 
 - matplotlib
 - scikit-learn
 - scipy
-- pandas
+- numpy (1.11.1)
+- pandas (0.18.1)
 - [tensorlayer](https://github.com/zsdonghao/tensorlayer) (optional)
 - MongoDB (optional)
 - [eAE](https://github.com/aoehmichen/eae-docker) (optional)
