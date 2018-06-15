@@ -19,11 +19,12 @@ This figure illustrates one interpretable LSTM cell from the model, which learn 
 - CUDA toolkit 8.0 and CuDNN v5
 - Python 2.7
 - [tensorflow-gpu (0.12.1)](https://www.tensorflow.org/versions/r0.12/get_started/os_setup)
-- matplotlib
-- scikit-learn
-- scipy
+- matplotlib (1.5.3)
+- scikit-learn (0.19.1)
+- scipy (1.0.0)
 - numpy (1.11.1)
 - pandas (0.18.1)
+- mne (0.15.2)
 - [tensorlayer](https://github.com/zsdonghao/tensorlayer) (optional)
 - MongoDB (optional)
 - [eAE](https://github.com/aoehmichen/eae-docker) (optional)
