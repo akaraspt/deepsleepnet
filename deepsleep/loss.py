@@ -3,8 +3,8 @@ import tensorflow as tf
 
 def softmax_cross_entrophy_loss(logits, targets):
     cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(
-        logits,
-        targets,
+        logits=logits,
+        labels=targets,
         name="cross_entropy_per_example"
     )
     cross_entropy_mean = tf.reduce_mean(cross_entropy, name="cross_entropy")

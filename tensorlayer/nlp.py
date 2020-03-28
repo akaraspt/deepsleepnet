@@ -247,8 +247,8 @@ class Vocabulary(object):
       reverse_vocab.append(unk_word)
     vocab = dict([(x, y) for (y, x) in enumerate(reverse_vocab)])
 
-    print("  [TL] Vocabulary from %s : %s %s %s" % (vocab_file, start_word, end_word, unk_word))
-    print("    vocabulary with %d words (includes start_word, end_word, unk_word)" % len(vocab))
+    print(("  [TL] Vocabulary from %s : %s %s %s" % (vocab_file, start_word, end_word, unk_word)))
+    print(("    vocabulary with %d words (includes start_word, end_word, unk_word)" % len(vocab)))
     # tf.logging.info("     vocabulary with %d words" % len(vocab))
 
     self.vocab = vocab  # vocab[word] = id
@@ -259,10 +259,10 @@ class Vocabulary(object):
     self.end_id = vocab[end_word]
     self.unk_id = vocab[unk_word]
     self.pad_id = vocab[pad_word]
-    print("      start_id: %d" % self.start_id)
-    print("      end_id: %d" % self.end_id)
-    print("      unk_id: %d" % self.unk_id)
-    print("      pad_id: %d" % self.pad_id)
+    print(("      start_id: %d" % self.start_id))
+    print(("      end_id: %d" % self.end_id))
+    print(("      unk_id: %d" % self.unk_id))
+    print(("      pad_id: %d" % self.pad_id))
 
   def word_to_id(self, word):
     """Returns the integer word id of a word string."""
@@ -364,19 +364,19 @@ def create_vocab(sentences, word_counts_output_file, min_word_count=1):
     for c in sentences:
         counter.update(c)
         # print('c',c)
-    print("    Total words: %d" % len(counter))
+    print(("    Total words: %d" % len(counter)))
 
     # Filter uncommon words and sort by descending count.
-    word_counts = [x for x in counter.items() if x[1] >= min_word_count]
+    word_counts = [x for x in list(counter.items()) if x[1] >= min_word_count]
     word_counts.sort(key=lambda x: x[1], reverse=True)
     word_counts = [("<PAD>", 0)] + word_counts # 1st id should be reserved for padding
     # print(word_counts)
-    print("    Words in vocabulary: %d" % len(word_counts))
+    print(("    Words in vocabulary: %d" % len(word_counts)))
 
     # Write out the word counts file.
     with tf.gfile.FastGFile(word_counts_output_file, "w") as f:
         f.write("\n".join(["%s %d" % (w, c) for w, c in word_counts]))
-    print("    Wrote vocabulary file: %s" % word_counts_output_file)
+    print(("    Wrote vocabulary file: %s" % word_counts_output_file))
 
     # Create the vocabulary dictionary.
     reverse_vocab = [x[0] for x in word_counts]
@@ -490,9 +490,9 @@ def read_analogies_file(eval_file='questions-words.txt', word2id={}):
               questions_skipped += 1
           else:
               questions.append(np.array(ids))
-    print("Eval analogy file: ", eval_file)
-    print("Questions: ", len(questions))
-    print("Skipped: ", questions_skipped)
+    print(("Eval analogy file: ", eval_file))
+    print(("Questions: ", len(questions)))
+    print(("Skipped: ", questions_skipped))
     analogy_questions = np.array(questions, dtype=np.int32)
     return analogy_questions
 
@@ -525,10 +525,10 @@ def build_vocab(data):
     # data = _read_words(filename)
     counter = collections.Counter(data)
     # print('counter', counter)   # dictionary for the occurrence number of each word, e.g. 'banknote': 1, 'photography': 1, 'kia': 1
-    count_pairs = sorted(counter.items(), key=lambda x: (-x[1], x[0]))
+    count_pairs = sorted(list(counter.items()), key=lambda x: (-x[1], x[0]))
     # print('count_pairs',count_pairs)  # convert dictionary to list of tuple, e.g. ('ssangyong', 1), ('swapo', 1), ('wachter', 1)
     words, _ = list(zip(*count_pairs))
-    word_to_id = dict(zip(words, range(len(words))))
+    word_to_id = dict(list(zip(words, list(range(len(words))))))
     # print(words)    # list of words
     # print(word_to_id) # dictionary for word to id, e.g. 'campbell': 2587, 'atlantic': 2247, 'aoun': 6746
     return word_to_id
@@ -547,7 +547,7 @@ def build_reverse_dictionary(word_to_id):
     reverse_dictionary : a dictionary
         mapping ids to words
     """
-    reverse_dictionary = dict(zip(word_to_id.values(), word_to_id.keys()))
+    reverse_dictionary = dict(list(zip(list(word_to_id.values()), list(word_to_id.keys()))))
     return reverse_dictionary
 
 def build_words_dataset(words=[], vocabulary_size=50000, printable=True, unk_key = 'UNK'):
@@ -606,11 +606,11 @@ def build_words_dataset(words=[], vocabulary_size=50000, printable=True, unk_key
             unk_count += 1
         data.append(index)
     count[0][1] = unk_count
-    reverse_dictionary = dict(zip(dictionary.values(), dictionary.keys()))
+    reverse_dictionary = dict(list(zip(list(dictionary.values()), list(dictionary.keys()))))
     if printable:
-        print('Real vocabulary size    %d' % len(collections.Counter(words).keys()))
-        print('Limited vocabulary size {}'.format(vocabulary_size))
-    assert len(collections.Counter(words).keys()) >= vocabulary_size , \
+        print(('Real vocabulary size    %d' % len(list(collections.Counter(words).keys()))))
+        print(('Limited vocabulary size {}'.format(vocabulary_size)))
+    assert len(list(collections.Counter(words).keys())) >= vocabulary_size , \
             "the limited vocabulary_size must be less than or equal to the read vocabulary_size"
     return data, count, dictionary, reverse_dictionary
 
@@ -725,9 +725,9 @@ def save_vocab(count=[], name='vocab.txt'):
     pwd = os.getcwd()
     vocabulary_size = len(count)
     with open(os.path.join(pwd, name), "w") as f:
-        for i in xrange(vocabulary_size):
+        for i in range(vocabulary_size):
             f.write("%s %d\n" % (tf.compat.as_text(count[i][0]), count[i][1]))
-    print("%d vocab saved to %s in %s" % (vocabulary_size, name, pwd))
+    print(("%d vocab saved to %s in %s" % (vocabulary_size, name, pwd)))
 
 ## Functions for translation
 def basic_tokenizer(sentence, _WORD_SPLIT=re.compile(b"([.,!?\"':;)(])")):
@@ -792,14 +792,14 @@ def create_vocabulary(vocabulary_path, data_path, max_vocabulary_size,
   - Code from ``/tensorflow/models/rnn/translation/data_utils.py``
   """
   if not gfile.Exists(vocabulary_path):
-    print("Creating vocabulary %s from data %s" % (vocabulary_path, data_path))
+    print(("Creating vocabulary %s from data %s" % (vocabulary_path, data_path)))
     vocab = {}
     with gfile.GFile(data_path, mode="rb") as f:
       counter = 0
       for line in f:
         counter += 1
         if counter % 100000 == 0:
-          print("  processing line %d" % counter)
+          print(("  processing line %d" % counter))
         tokens = tokenizer(line) if tokenizer else basic_tokenizer(line)
         for w in tokens:
           word = re.sub(_DIGIT_RE, b"0", w) if normalize_digits else w
@@ -814,7 +814,7 @@ def create_vocabulary(vocabulary_path, data_path, max_vocabulary_size,
         for w in vocab_list:
           vocab_file.write(w + b"\n")
   else:
-    print("Vocabulary %s from data %s exists" % (vocabulary_path, data_path))
+    print(("Vocabulary %s from data %s exists" % (vocabulary_path, data_path)))
 
 def initialize_vocabulary(vocabulary_path):
   """Initialize vocabulary from file, return the word_to_id (dictionary)
@@ -920,7 +920,7 @@ def data_to_token_ids(data_path, target_path, vocabulary_path,
   - Code from ``/tensorflow/models/rnn/translation/data_utils.py``
   """
   if not gfile.Exists(target_path):
-    print("Tokenizing data in %s" % data_path)
+    print(("Tokenizing data in %s" % data_path))
     vocab, _ = initialize_vocabulary(vocabulary_path)
     with gfile.GFile(data_path, mode="rb") as data_file:
       with gfile.GFile(target_path, mode="w") as tokens_file:
@@ -928,10 +928,10 @@ def data_to_token_ids(data_path, target_path, vocabulary_path,
         for line in data_file:
           counter += 1
           if counter % 100000 == 0:
-            print("  tokenizing line %d" % counter)
+            print(("  tokenizing line %d" % counter))
           token_ids = sentence_to_token_ids(line, vocab, tokenizer,
                                             normalize_digits, UNK_ID=UNK_ID,
                                             _DIGIT_RE=_DIGIT_RE)
           tokens_file.write(" ".join([str(tok) for tok in token_ids]) + "\n")
   else:
-    print("Target path %s exists" % target_path)
+    print(("Target path %s exists" % target_path))

@@ -29,7 +29,7 @@ class NonSeqDataLoader(object):
         labels = []
         fs = None
         for npz_f in npz_files:
-            print "Loading {} ...".format(npz_f)
+            print("Loading {} ...".format(npz_f))
             tmp_data, tmp_labels, sampling_rate = self._load_npz_file(npz_f)
             if fs is None:
                 fs = sampling_rate
@@ -48,12 +48,12 @@ class NonSeqDataLoader(object):
         train_files = np.setdiff1d(list_files, val_files[self.fold_idx])
 
         # Load a npz file
-        print "Load training set:"
+        print("Load training set:")
         data_train, label_train = self._load_npz_list_files(train_files)
-        print " "
-        print "Load validation set:"
+        print(" ")
+        print("Load validation set:")
         data_val, label_val = self._load_npz_list_files(val_files[self.fold_idx])
-        print " "
+        print(" ")
 
         # Reshape the data to match the input of the model - conv2d
         data_train = np.squeeze(data_train)
@@ -104,13 +104,13 @@ class NonSeqDataLoader(object):
         subject_files.sort()
 
         # Load training and validation sets
-        print "\n========== [Fold-{}] ==========\n".format(self.fold_idx)
-        print "Load training set:"
+        print("\n========== [Fold-{}] ==========\n".format(self.fold_idx))
+        print("Load training set:")
         data_train, label_train = self._load_npz_list_files(npz_files=train_files)
-        print " "
-        print "Load validation set:"
+        print(" ")
+        print("Load validation set:")
         data_val, label_val = self._load_npz_list_files(npz_files=subject_files)
-        print " "
+        print(" ")
 
         # Reshape the data to match the input of the model - conv2d
         data_train = np.squeeze(data_train)
@@ -124,22 +124,22 @@ class NonSeqDataLoader(object):
         data_val = data_val.astype(np.float32)
         label_val = label_val.astype(np.int32)
 
-        print "Training set: {}, {}".format(data_train.shape, label_train.shape)
+        print("Training set: {}, {}".format(data_train.shape, label_train.shape))
         print_n_samples_each_class(label_train)
-        print " "
-        print "Validation set: {}, {}".format(data_val.shape, label_val.shape)
+        print(" ")
+        print("Validation set: {}, {}".format(data_val.shape, label_val.shape))
         print_n_samples_each_class(label_val)
-        print " "
+        print(" ")
 
         # Use balanced-class, oversample training set
         x_train, y_train = get_balance_class_oversample(
             x=data_train, y=label_train
         )
-        print "Oversampled training set: {}, {}".format(
+        print("Oversampled training set: {}, {}".format(
             x_train.shape, y_train.shape
-        )
+        ))
         print_n_samples_each_class(y_train)
-        print " "
+        print(" ")
 
         return x_train, y_train, data_val, label_val
 
@@ -162,9 +162,9 @@ class NonSeqDataLoader(object):
                 subject_files.append(os.path.join(self.data_dir, f))
         subject_files.sort()
 
-        print "\n========== [Fold-{}] ==========\n".format(self.fold_idx)
+        print("\n========== [Fold-{}] ==========\n".format(self.fold_idx))
 
-        print "Load validation set:"
+        print("Load validation set:")
         data_val, label_val = self._load_npz_list_files(subject_files)
 
         # Reshape the data to match the input of the model
@@ -199,7 +199,7 @@ class SeqDataLoader(object):
         labels = []
         fs = None
         for npz_f in npz_files:
-            print "Loading {} ...".format(npz_f)
+            print("Loading {} ...".format(npz_f))
             tmp_data, tmp_labels, sampling_rate = self._load_npz_file(npz_f)
             if fs is None:
                 fs = sampling_rate
@@ -229,12 +229,12 @@ class SeqDataLoader(object):
         train_files = np.setdiff1d(list_files, val_files[self.fold_idx])
 
         # Load a npz file
-        print "Load training set:"
+        print("Load training set:")
         data_train, label_train = self._load_npz_list_files(train_files)
-        print " "
-        print "Load validation set:"
+        print(" ")
+        print("Load validation set:")
         data_val, label_val = self._load_npz_list_files(val_files[self.fold_idx])
-        print " "
+        print(" ")
 
         return data_train, label_train, data_val, label_val
 
@@ -251,9 +251,9 @@ class SeqDataLoader(object):
         val_files = np.array_split(npzfiles, self.n_folds)
         val_files = val_files[self.fold_idx]
 
-        print "\n========== [Fold-{}] ==========\n".format(self.fold_idx)
+        print("\n========== [Fold-{}] ==========\n".format(self.fold_idx))
 
-        print "Load validation set:"
+        print("Load validation set:")
         data_val, label_val = self._load_npz_list_files(val_files)
 
         return data_val, label_val
@@ -284,30 +284,30 @@ class SeqDataLoader(object):
         subject_files.sort()
 
         # Load training and validation sets
-        print "\n========== [Fold-{}] ==========\n".format(self.fold_idx)
-        print "Load training set:"
+        print("\n========== [Fold-{}] ==========\n".format(self.fold_idx))
+        print("Load training set:")
         data_train, label_train = self._load_npz_list_files(train_files)
-        print " "
-        print "Load validation set:"
+        print(" ")
+        print("Load validation set:")
         data_val, label_val = self._load_npz_list_files(subject_files)
-        print " "
+        print(" ")
 
-        print "Training set: n_subjects={}".format(len(data_train))
+        print("Training set: n_subjects={}".format(len(data_train)))
         n_train_examples = 0
         for d in data_train:
-            print d.shape
+            print(d.shape)
             n_train_examples += d.shape[0]
-        print "Number of examples = {}".format(n_train_examples)
+        print("Number of examples = {}".format(n_train_examples))
         print_n_samples_each_class(np.hstack(label_train))
-        print " "
-        print "Validation set: n_subjects={}".format(len(data_val))
+        print(" ")
+        print("Validation set: n_subjects={}".format(len(data_val)))
         n_valid_examples = 0
         for d in data_val:
-            print d.shape
+            print(d.shape)
             n_valid_examples += d.shape[0]
-        print "Number of examples = {}".format(n_valid_examples)
+        print("Number of examples = {}".format(n_valid_examples))
         print_n_samples_each_class(np.hstack(label_val))
-        print " "
+        print(" ")
 
         return data_train, label_train, data_val, label_val
 
@@ -342,7 +342,7 @@ class SeqDataLoader(object):
             labels = []
             fs = None
             for npz_f in npz_files:
-                print "Loading {} ...".format(npz_f)
+                print("Loading {} ...".format(npz_f))
                 tmp_data, tmp_labels, sampling_rate = load_npz_file(npz_f)
                 if fs is None:
                     fs = sampling_rate
@@ -365,7 +365,7 @@ class SeqDataLoader(object):
 
             return data, labels
 
-        print "Load data from: {}".format(subject_files)
+        print("Load data from: {}".format(subject_files))
         data, labels = load_npz_list_files(subject_files)
 
         return data, labels

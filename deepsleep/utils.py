@@ -92,7 +92,7 @@ def iterate_seq_minibatches(inputs, targets, batch_size, seq_length, stride):
                               dtype=inputs.dtype)
         seq_targets = np.zeros((batch_size, seq_length) + targets.shape[1:],
                                dtype=targets.dtype)
-        for b_idx in xrange(batch_size):
+        for b_idx in range(batch_size):
             start_seq_idx = start_idx + (b_idx * stride)
             end_seq_idx = start_seq_idx + seq_length
             seq_inputs[b_idx] = inputs[start_seq_idx:end_seq_idx]
@@ -129,7 +129,7 @@ def iterate_batch_seq_minibatches(inputs, targets, batch_size, seq_length):
 
 
 def iterate_list_batch_seq_minibatches(inputs, targets, batch_size, seq_length):
-    for idx, each_data in enumerate(itertools.izip(inputs, targets)):
+    for idx, each_data in enumerate(zip(inputs, targets)):
         each_x, each_y = each_data
         seq_x, seq_y = [], []
         for x_batch, y_batch in iterate_seq_minibatches(inputs=each_x, 

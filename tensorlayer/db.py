@@ -99,7 +99,7 @@ class TensorDB(object):
         self.paramsfs = gridfs.GridFS(self.db, collection="paramsfs")
         self.archfs=gridfs.GridFS(self.db,collection="ModelArchitecture")
         ##
-        print("[TensorDB] Connect SUCCESS {}:{} {} {} {}".format(ip, port, db_name, user_name, studyID))
+        print(("[TensorDB] Connect SUCCESS {}:{} {} {} {}".format(ip, port, db_name, user_name, studyID)))
 
         self.ip = ip
         self.port = port
@@ -143,7 +143,7 @@ class TensorDB(object):
         args.update({'f_id': f_id, 'time': datetime.utcnow()})
         self.db.Params.insert_one(args)
         # print("[TensorDB] Save params: {} SUCCESS, took: {}s".format(file_name, round(time.time()-s, 2)))
-        print("[TensorDB] Save params: SUCCESS, took: {}s".format(round(time.time()-st, 2)))
+        print(("[TensorDB] Save params: SUCCESS, took: {}s".format(round(time.time()-st, 2))))
         return f_id
 
     @AutoFill
@@ -164,7 +164,7 @@ class TensorDB(object):
         if d is not None:
             f_id = d['f_id']
         else:
-            print("[TensorDB] Cannot find: {}".format(args))
+            print(("[TensorDB] Cannot find: {}".format(args)))
             return False, False
 
         st = time.time()
@@ -180,7 +180,7 @@ class TensorDB(object):
         params = self.__deserialization(d)
         # print('deseri time', time.time()-s)
 
-        print("[TensorDB] Find one params SUCCESS, {} took: {}s".format(args, round(time.time()-st, 2)))
+        print(("[TensorDB] Find one params SUCCESS, {} took: {}s".format(args, round(time.time()-st, 2))))
         return params, f_id
 
     @AutoFill
@@ -208,10 +208,10 @@ class TensorDB(object):
                     tmp = decompress(tmp)
                 params.append(self.__deserialization(tmp))
         else:
-            print("[TensorDB] Cannot find: {}".format(args))
+            print(("[TensorDB] Cannot find: {}".format(args)))
             return False
 
-        print("[TensorDB] Find all params SUCCESS, took: {}s".format(round(time.time()-st, 2)))
+        print(("[TensorDB] Find all params SUCCESS, took: {}s".format(round(time.time()-st, 2))))
         return params
 
     @AutoFill
@@ -230,13 +230,13 @@ class TensorDB(object):
         # remove from Collections
         self.db.Params.remove(args)
 
-        print("[TensorDB] Delete params SUCCESS: {}".format(args))
+        print(("[TensorDB] Delete params SUCCESS: {}".format(args)))
 
     def _print_dict(self, args):
         """ """
         # return " / ".join(str(key) + ": "+ str(value) for key, value in args.items())
         string = ''
-        for key, value in args.items():
+        for key, value in list(args.items()):
             if key is not '_id':
                 string += str(key) + ": "+ str(value) + " / "
         return string
@@ -287,7 +287,7 @@ class TensorDB(object):
         _result = self.db.ValidLog.insert_one(args)
         # _log = "".join(str(key) + ": " + str(value) for key, value in args.items())
         _log = self._print_dict(args)
-        print("[TensorDB] ValidLog: " +_log)
+        print(("[TensorDB] ValidLog: " +_log))
         return _result
 
     @AutoFill
@@ -317,7 +317,7 @@ class TensorDB(object):
         _result = self.db.TestLog.insert_one(args)
         # _log = "".join(str(key) + str(value) for key, value in args.items())
         _log = self._print_dict(args)
-        print("[TensorDB] TestLog: " +_log)
+        print(("[TensorDB] TestLog: " +_log))
         return _result
 
     @AutoFill
@@ -351,7 +351,7 @@ class TensorDB(object):
             print(fid)
             # "print find"
         else:
-            print("[TensorDB] Cannot find: {}".format(args))
+            print(("[TensorDB] Cannot find: {}".format(args)))
             print ("no idtem")
             return False, False
         try:
@@ -389,7 +389,7 @@ class TensorDB(object):
         else:
             _result = self.db.Job.replace_one(args, args, upsert=True)
         _log = self._print_dict(args)
-        print("[TensorDB] Submit Job: args={}".format(args))
+        print(("[TensorDB] Submit Job: args={}".format(args)))
         return _result
 
     def get_job(self, job_id):
@@ -408,7 +408,7 @@ class TensorDB(object):
         job = self.db.Job.find_one({"_id": job_id})
 
         if job is None:
-            print("[TensorDB] Cannot find any job with id: {}".format(job_id))
+            print(("[TensorDB] Cannot find any job with id: {}".format(job_id)))
             return False
         else:
             return job
@@ -439,7 +439,7 @@ class TensorDB(object):
             print("[TensorDB] There is no job")
             return False
 
-        print("[TensorDB] Get jobs with status:{} SUCCESS".format(status))
+        print(("[TensorDB] Get jobs with status:{} SUCCESS".format(status)))
         return jobs
 
     def change_job_status(self, job_id, status):
@@ -460,7 +460,7 @@ class TensorDB(object):
         job = self.db.Job.find_one({"_id": job_id})
 
         if job is None:
-            print("[TensorDB] Cannot find any job with id: {}".format(job_id))
+            print(("[TensorDB] Cannot find any job with id: {}".format(job_id)))
             return False
         else:
             _result = self.db.Job.update(
@@ -472,7 +472,7 @@ class TensorDB(object):
                     }
                 }, upsert=False, multi=False
             )
-            print("[TensorDB] Change the status of job ({}) to: {}".format(job_id, status))
+            print(("[TensorDB] Change the status of job ({}) to: {}".format(job_id, status)))
             return _result
 
     def __str__(self):

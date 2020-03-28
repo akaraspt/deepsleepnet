@@ -36,7 +36,7 @@ def discount_episode_rewards(rewards=[], gamma=0.99, mode=0):
     """
     discounted_r = np.zeros_like(rewards, dtype=np.float32)
     running_add = 0
-    for t in reversed(xrange(0, rewards.size)):
+    for t in reversed(range(0, rewards.size)):
         if mode == 0:
             if rewards[t] != 0: running_add = 0
 
@@ -60,14 +60,14 @@ def cross_entropy_reward_loss(logits, actions, rewards, name=None):
 
     Examples
     ----------
-    >>> states_batch_pl = tf.placeholder(tf.float32, shape=[None, D])   # observation for training
+    >>> states_batch_pl = tf.compat.v1.placeholder(tf.float32, shape=[None, D])   # observation for training
     >>> network = tl.layers.InputLayer(states_batch_pl, name='input_layer')
     >>> network = tl.layers.DenseLayer(network, n_units=H, act = tf.nn.relu, name='relu1')
     >>> network = tl.layers.DenseLayer(network, n_units=3, act = tl.activation.identity, name='output_layer')
     >>> probs = network.outputs
     >>> sampling_prob = tf.nn.softmax(probs)
-    >>> actions_batch_pl = tf.placeholder(tf.int32, shape=[None])
-    >>> discount_rewards_batch_pl = tf.placeholder(tf.float32, shape=[None])
+    >>> actions_batch_pl = tf.compat.v1.placeholder(tf.int32, shape=[None])
+    >>> discount_rewards_batch_pl = tf.compat.v1.placeholder(tf.float32, shape=[None])
     >>> loss = cross_entropy_reward_loss(probs, actions_batch_pl, discount_rewards_batch_pl)
     >>> train_op = tf.train.RMSPropOptimizer(learning_rate, decay_rate).minimize(loss)
     """
@@ -81,5 +81,5 @@ def cross_entropy_reward_loss(logits, actions, rewards, name=None):
     try: ## TF1.0
         loss = tf.reduce_sum(tf.multiply(cross_entropy, rewards))
     except: ## TF0.12
-        loss = tf.reduce_sum(tf.mul(cross_entropy, rewards))   # element-wise mul
+        loss = tf.reduce_sum(tf.multiply(cross_entropy, rewards))   # element-wise mul
     return loss

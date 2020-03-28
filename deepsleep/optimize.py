@@ -2,7 +2,7 @@ import tensorflow as tf
 
 
 def adam(loss, lr, train_vars, beta1=0.9, beta2=0.999, epsilon=1e-8):
-    opt = tf.train.AdamOptimizer(
+    opt = tf.compat.v1.train.AdamOptimizer(
         learning_rate=lr,
         beta1=beta1,
         beta2=beta2,
@@ -18,8 +18,8 @@ def adam_clipping(loss, lr, train_vars, beta1=0.9, beta2=0.999,
                   epsilon=1e-8, clip_value=5.0):
     grads, _ = tf.clip_by_global_norm(tf.gradients(loss, train_vars),
                                       clip_value)
-    capped_gvs = zip(grads, train_vars)
-    opt = tf.train.AdamOptimizer(
+    capped_gvs = list(zip(grads, train_vars))
+    opt = tf.compat.v1.train.AdamOptimizer(
         learning_rate=lr,
         beta1=beta1,
         beta2=beta2,
@@ -50,14 +50,14 @@ def adam_clipping_list_lr(loss, list_lrs, list_train_vars,
     grads_and_vars = []
     for i, v in enumerate(list_train_vars):
         g = grads[offset:offset+len(v)]
-        opt = tf.train.AdamOptimizer(
+        opt = tf.compat.v1.train.AdamOptimizer(
             learning_rate=list_lrs[i],
             beta1=beta1,
             beta2=beta2,
             epsilon=epsilon,
             name="Adam"
         )
-        gvs = zip(g, v)
+        gvs = list(zip(g, v))
         apply_gradient_op = opt.apply_gradients(gvs)
 
         apply_gradient_ops.append(apply_gradient_op)

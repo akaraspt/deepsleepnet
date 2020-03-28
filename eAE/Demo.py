@@ -29,11 +29,11 @@ chunkSize = int(round(len(diabetesX)/5))
 
 # Split the data into training/testing sets
 diabetesXTest = diabetesX[permutation*chunkSize: (permutation+1)*chunkSize]
-diabetesXTrain = np.delete(diabetesX, range(permutation*chunkSize,(permutation+1)*chunkSize),0)
+diabetesXTrain = np.delete(diabetesX, list(range(permutation*chunkSize,(permutation+1)*chunkSize)),0)
 
 # Split the targets into training/testing sets
 diabetesYTest = diabetes.target[permutation*chunkSize: (permutation+1)*chunkSize]
-diabetesYTrain = np.delete(diabetes.target[:],range(permutation*chunkSize,(permutation+1)*chunkSize))
+diabetesYTrain = np.delete(diabetes.target[:],list(range(permutation*chunkSize,(permutation+1)*chunkSize)))
 
 
 # Create linear regression object

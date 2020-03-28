@@ -13,7 +13,6 @@ from sklearn.metrics import confusion_matrix, f1_score
 from tensorflow.python.framework import tensor_shape
 from tensorflow.python.ops import array_ops
 from tensorflow.python.ops import math_ops
-from tensorflow.python.ops import rnn_cell
 from tensorflow.python.ops import variable_scope as vs
 from tensorflow.python.util import nest
 
@@ -38,18 +37,18 @@ tf.app.flags.DEFINE_string('output_dir', 'output',
 
 def print_performance(sess, network_name, n_examples, duration, loss, cm, acc, f1):
     # Get regularization loss
-    reg_loss = tf.add_n(tf.get_collection("losses", scope=network_name + "\/"))
+    reg_loss = tf.add_n(tf.compat.v1.get_collection("losses", scope=network_name + "\/"))
     reg_loss_value = sess.run(reg_loss)
 
     # Print performance
-    print (
+    print((
         "duration={:.3f} sec, n={}, loss={:.3f} ({:.3f}), acc={:.3f}, "
         "f1={:.3f}".format(
             duration, n_examples, loss, reg_loss_value, acc, f1
         )
-    )
-    print cm
-    print " "
+    ))
+    print(cm)
+    print(" ")
 
 
 def _reverse_seq(input_seq, lengths):
@@ -148,7 +147,7 @@ def custom_rnn(cell, inputs, initial_state=None, dtype=None,
             (column size) cannot be inferred from inputs via shape inference.
     """
 
-    if not isinstance(cell, rnn_cell.RNNCell):
+    if not isinstance(cell, tf.compat.v1.nn.rnn_cell.RNNCell):
         raise TypeError("cell must be an instance of RNNCell")
     if not nest.is_sequence(inputs):
         raise TypeError("inputs must be a sequence")
@@ -292,25 +291,25 @@ def custom_bidirectional_rnn(cell_fw, cell_bw, inputs,
         ValueError: If inputs is None or an empty list.
     """
 
-    if not isinstance(cell_fw, rnn_cell.RNNCell):
+    if not isinstance(cell_fw, tf.compat.v1.nn.rnn_cell.RNNCell):
         raise TypeError("cell_fw must be an instance of RNNCell")
-    if not isinstance(cell_bw, rnn_cell.RNNCell):
+    if not isinstance(cell_bw, tf.compat.v1.nn.rnn_cell.RNNCell):
         raise TypeError("cell_bw must be an instance of RNNCell")
     if not nest.is_sequence(inputs):
         raise TypeError("inputs must be a sequence")
     if not inputs:
         raise ValueError("inputs must not be empty")
 
-    with vs.variable_scope(scope or "BiRNN"):
+    with vs.variable_scope(scope or "bidirectional_rnn"):
         # Forward direction
-        with vs.variable_scope("FW") as fw_scope:
+        with vs.variable_scope("fw") as fw_scope:
             output_fw, output_state_fw, fw_states = custom_rnn(
                 cell_fw, inputs, initial_state_fw, dtype,
                 sequence_length, scope=fw_scope
             )
 
         # Backward direction
-        with vs.variable_scope("BW") as bw_scope:
+        with vs.variable_scope("bw") as bw_scope:
             reversed_inputs = _reverse_seq(inputs, sequence_length)
             tmp, output_state_bw, tmp_states = custom_rnn(
                 cell_bw, reversed_inputs, initial_state_bw,
@@ -324,7 +323,7 @@ def custom_bidirectional_rnn(cell_fw, cell_bw, inputs,
     flat_output_fw = nest.flatten(output_fw)
     flat_output_bw = nest.flatten(output_bw)
 
-    flat_outputs = tuple(array_ops.concat(1, [fw, bw])
+    flat_outputs = tuple(array_ops.concat(values=[fw, bw], axis=1)
                         for fw, bw in zip(flat_output_fw, flat_output_bw))
 
     outputs = nest.pack_sequence_as(structure=output_fw,
@@ -376,7 +375,7 @@ class CustomDeepSleepNet(DeepSleepNet):
 
         # Fully-connected to select some part of the output to add with the output from bi-directional LSTM
         name = "l{}_fc".format(self.layer_idx)
-        with tf.variable_scope(name) as scope:
+        with tf.compat.v1.variable_scope(name) as scope:
             output_tmp = fc(name="fc", input_var=network, n_hiddens=1024, bias=None, wd=0)
             output_tmp = batch_norm_new(name="bn", input_var=output_tmp, is_train=self.is_train)
             output_tmp = tf.nn.relu(output_tmp, name="relu")
@@ -400,35 +399,31 @@ class CustomDeepSleepNet(DeepSleepNet):
         # Bidirectional LSTM network
         name = "l{}_bi_lstm".format(self.layer_idx)
         hidden_size = 512   # will output 1024 (512 forward, 512 backward)
-        with tf.variable_scope(name) as scope:
-            fw_lstm_cell = tf.nn.rnn_cell.LSTMCell(hidden_size,
-                                                   use_peepholes=True,
-                                                   state_is_tuple=True)
-            bw_lstm_cell = tf.nn.rnn_cell.LSTMCell(hidden_size,
-                                                   use_peepholes=True,
-                                                   state_is_tuple=True)
-            if self.use_dropout_sequence:
-                keep_prob = 0.5 if self.is_train else 1.0
-                fw_lstm_cell = tf.nn.rnn_cell.DropoutWrapper(
-                    fw_lstm_cell,
-                    output_keep_prob=keep_prob
-                )
-                bw_lstm_cell = tf.nn.rnn_cell.DropoutWrapper(
-                    bw_lstm_cell,
-                    output_keep_prob=keep_prob
-                )
+        with tf.compat.v1.variable_scope(name) as scope:
 
-            fw_cell = tf.nn.rnn_cell.MultiRNNCell([fw_lstm_cell] * self.n_rnn_layers,
-                                                  state_is_tuple=True)
-            bw_cell = tf.nn.rnn_cell.MultiRNNCell([bw_lstm_cell] * self.n_rnn_layers,
-                                                  state_is_tuple=True)
+            def lstm_cell():
+                cell = tf.compat.v1.nn.rnn_cell.LSTMCell(hidden_size,
+                                                use_peepholes=True,
+                                                state_is_tuple=True,
+                                                reuse=tf.compat.v1.get_variable_scope().reuse) 
+                if self.use_dropout_sequence:
+                    keep_prob = 0.5 if self.is_train else 1.0
+                    cell = tf.compat.v1.nn.rnn_cell.DropoutWrapper(
+                        cell,
+                        output_keep_prob=keep_prob
+                    )
+
+                return cell
+
+            fw_cell = tf.compat.v1.nn.rnn_cell.MultiRNNCell([lstm_cell() for _ in range(self.n_rnn_layers)], state_is_tuple = True)
+            bw_cell = tf.compat.v1.nn.rnn_cell.MultiRNNCell([lstm_cell() for _ in range(self.n_rnn_layers)], state_is_tuple = True)
 
             # Initial state of RNN
             self.fw_initial_state = fw_cell.zero_state(self.batch_size, tf.float32)
             self.bw_initial_state = bw_cell.zero_state(self.batch_size, tf.float32)
 
             # Feedforward to MultiRNNCell
-            list_rnn_inputs = tf.unpack(seq_input, axis=1)
+            list_rnn_inputs = tf.unstack(seq_input, axis=1)
             outputs, fw_state, bw_state, fw_states, bw_states = custom_bidirectional_rnn(
                 cell_fw=fw_cell,
                 cell_bw=bw_cell,
@@ -440,7 +435,7 @@ class CustomDeepSleepNet(DeepSleepNet):
             if self.return_last:
                 network = outputs[-1]
             else:
-                network = tf.reshape(tf.concat(1, outputs), [-1, hidden_size*2],
+                network = tf.reshape(tf.concat(axis=1, values=outputs), [-1, hidden_size*2],
                                      name=name)
             self.activations.append((name, network))
             self.layer_idx +=1
@@ -491,7 +486,7 @@ def custom_run_epoch(
     all_fw_memory_cells = []
     all_bw_memory_cells = []
     total_loss, n_batches = 0.0, 0
-    for sub_f_idx, each_data in enumerate(itertools.izip(inputs, targets)):
+    for sub_f_idx, each_data in enumerate(zip(inputs, targets)):
         each_x, each_y = each_data
 
         # # Initialize state of LSTM - Unidirectional LSTM
@@ -582,7 +577,7 @@ def custom_run_epoch(
         "output_subject{}.npz".format(subject_idx)
     )
     np.savez(save_path, **save_dict)
-    print "Saved outputs to {}".format(save_path)
+    print("Saved outputs to {}".format(save_path))
 
     duration = time.time() - start_time
     total_loss /= n_batches
@@ -604,7 +599,7 @@ def predict(
     y_pred = []
 
     # The model will be built into the default Graph
-    with tf.Graph().as_default(), tf.Session() as sess:
+    with tf.Graph().as_default(), tf.compat.v1.Session() as sess:
         # Build the network
         valid_net = CustomDeepSleepNet(
             batch_size=1, 
@@ -632,9 +627,9 @@ def predict(
             )
 
             # Restore the trained model
-            saver = tf.train.Saver()
+            saver = tf.compat.v1.train.Saver()
             saver.restore(sess, tf.train.latest_checkpoint(checkpoint_path))
-            print "Model restored from: {}\n".format(tf.train.latest_checkpoint(checkpoint_path))
+            print("Model restored from: {}\n".format(tf.train.latest_checkpoint(checkpoint_path)))
 
             # Load testing data
             x, y = SeqDataLoader.load_subject_data(
@@ -643,7 +638,7 @@ def predict(
             )
 
             # Loop each epoch
-            print "[{}] Predicting ...\n".format(datetime.now())
+            print("[{}] Predicting ...\n".format(datetime.now()))
 
             # Evaluate the model on the subject data
             y_true_, y_pred_, loss, duration = \
@@ -671,19 +666,19 @@ def predict(
             y_pred.extend(y_pred_)
         
     # Overall performance
-    print "[{}] Overall prediction performance\n".format(datetime.now())
+    print("[{}] Overall prediction performance\n".format(datetime.now()))
     y_true = np.asarray(y_true)
     y_pred = np.asarray(y_pred)
     n_examples = len(y_true)
     cm = confusion_matrix(y_true, y_pred)
     acc = np.mean(y_true == y_pred)
     mf1 = f1_score(y_true, y_pred, average="macro")
-    print (
+    print((
         "n={}, acc={:.3f}, f1={:.3f}".format(
             n_examples, acc, mf1
         )
-    )
-    print cm
+    ))
+    print(cm)
 
 
 def main(argv=None):
@@ -707,4 +702,4 @@ def main(argv=None):
 
 
 if __name__ == "__main__":
-    tf.app.run()
+    tf.compat.v1.app.run()

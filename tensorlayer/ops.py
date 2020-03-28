@@ -23,15 +23,15 @@ def exit_tf(sess=None):
     # import time
     # time.sleep(2)
     if _platform == "linux" or _platform == "linux2":
-        print('linux: %s' % text)
+        print(('linux: %s' % text))
         os.system('nvidia-smi')
         os.system('fuser 6006/tcp -k')  # kill tensorboard 6006
         os.system("nvidia-smi | grep python |awk '{print $3}'|xargs kill") # kill all nvidia-smi python process
     elif _platform == "darwin":
-        print('OS X: %s' % text)
+        print(('OS X: %s' % text))
         os.system("lsof -i tcp:6006 | grep -v PID | awk '{print $2}' | xargs kill") # kill tensorboard 6006
     elif _platform == "win32":
-        print('Windows: %s' % text)
+        print(('Windows: %s' % text))
     else:
         print(_platform)
     exit()
@@ -54,7 +54,7 @@ def clear_all(printable=True):
         if 'class' in str(globals()[var]): continue
 
         if printable:
-            print(" clear_all ------- %s" % str(globals()[var]))
+            print((" clear_all ------- %s" % str(globals()[var])))
 
         del globals()[var]
 
@@ -92,9 +92,9 @@ def set_gpu_fraction(sess=None, gpu_fraction=0.3):
     ----------
     - `TensorFlow using GPU <https://www.tensorflow.org/versions/r0.9/how_tos/using_gpu/index.html>`_
     """
-    print("  tensorlayer: GPU MEM Fraction %f" % gpu_fraction)
+    print(("  tensorlayer: GPU MEM Fraction %f" % gpu_fraction))
     gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=gpu_fraction)
-    sess = tf.Session(config = tf.ConfigProto(gpu_options = gpu_options))
+    sess = tf.compat.v1.Session(config = tf.ConfigProto(gpu_options = gpu_options))
     return sess
 
 
@@ -184,7 +184,7 @@ def get_site_packages_directory():
     import site
     try:
         loc = site.getsitepackages()
-        print("  tl.ops : site-packages in ", loc)
+        print(("  tl.ops : site-packages in ", loc))
         return loc
     except:
         print("  tl.ops : Cannot find package dir from virtual environment")
@@ -198,13 +198,13 @@ def empty_trash():
     """
     text = "[tl] Empty the trash"
     if _platform == "linux" or _platform == "linux2":
-        print('linux: %s' % text)
+        print(('linux: %s' % text))
         os.system("rm -rf ~/.local/share/Trash/*")
     elif _platform == "darwin":
-        print('OS X: %s' % text)
+        print(('OS X: %s' % text))
         os.system("sudo rm -rf ~/.Trash/*")
     elif _platform == "win32":
-        print('Windows: %s' % text)
+        print(('Windows: %s' % text))
         try:
             os.system("rd /s c:\$Recycle.Bin")  # Windows 7 or Server 2008
         except:

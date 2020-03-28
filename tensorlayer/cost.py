@@ -221,8 +221,8 @@ def cross_entropy_seq(logits, target_seqs, batch_size=None):#, batch_size=1, num
     Examples
     --------
     >>> see PTB tutorial for more details
-    >>> input_data = tf.placeholder(tf.int32, [batch_size, num_steps])
-    >>> targets = tf.placeholder(tf.int32, [batch_size, num_steps])
+    >>> input_data = tf.compat.v1.placeholder(tf.int32, [batch_size, num_steps])
+    >>> targets = tf.compat.v1.placeholder(tf.int32, [batch_size, num_steps])
     >>> cost = tl.cost.cross_entropy_seq(network.outputs, targets)
     """
     try: # TF 1.0
@@ -294,7 +294,7 @@ def cosine_similarity(v1, v2):
     try: ## TF1.0
         cost = tf.reduce_sum(tf.multiply(v1, v2), 1) / (tf.sqrt(tf.reduce_sum(tf.multiply(v1, v1), 1)) * tf.sqrt(tf.reduce_sum(tf.multiply(v2, v2), 1)))
     except: ## TF0.12
-        cost = tf.reduce_sum(tf.mul(v1, v2), reduction_indices=1) / (tf.sqrt(tf.reduce_sum(tf.mul(v1, v1), reduction_indices=1)) * tf.sqrt(tf.reduce_sum(tf.mul(v2, v2), reduction_indices=1)))
+        cost = tf.reduce_sum(tf.multiply(v1, v2), axis=1) / (tf.sqrt(tf.reduce_sum(tf.multiply(v1, v1), axis=1)) * tf.sqrt(tf.reduce_sum(tf.multiply(v2, v2), axis=1)))
     return cost
 
 
