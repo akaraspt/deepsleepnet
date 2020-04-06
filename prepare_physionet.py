@@ -10,7 +10,6 @@ import urllib.request, urllib.error, urllib.parse
 from datetime import datetime
 
 import numpy as np
-import pandas as pd
 
 from mne import Epochs, pick_types, find_events
 from mne.io import concatenate_raws, read_raw_edf
@@ -92,12 +91,12 @@ def main():
 
         raw = read_raw_edf(psg_fnames[i], preload=True, stim_channel=None)
         sampling_rate = raw.info['sfreq']
-        raw_ch_df = raw.to_data_frame(scale_time=100.0)[select_ch]
+        raw_ch_df = raw.to_data_frame(scaling_time=100.0)[select_ch]
         raw_ch_df = raw_ch_df.to_frame()
         raw_ch_df.set_index(np.arange(len(raw_ch_df)))
 
         # Get raw header
-        f = open(psg_fnames[i], 'r')
+        f = open(psg_fnames[i], 'r', encoding='iso-8859-1')
         reader_raw = dhedfreader.BaseEDFReader(f)
         reader_raw.read_header()
         h_raw = reader_raw.header
@@ -105,7 +104,7 @@ def main():
         raw_start_dt = datetime.strptime(h_raw['date_time'], "%Y-%m-%d %H:%M:%S")
 
         # Read annotation and its header
-        f = open(ann_fnames[i], 'r')
+        f = open(ann_fnames[i], 'r', encoding='iso-8859-1')
         reader_ann = dhedfreader.BaseEDFReader(f)
         reader_ann.read_header()
         h_ann = reader_ann.header
