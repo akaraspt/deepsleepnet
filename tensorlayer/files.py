@@ -63,7 +63,7 @@ def load_mnist_dataset(shape=(-1,784), path="data/mnist/"):
         return data
 
     # Download and read the training and test set images and labels.
-    print("Load or Download MNIST > {}".format(path))
+    print(("Load or Download MNIST > {}".format(path)))
     X_train = load_mnist_images(path, 'train-images-idx3-ubyte.gz')
     y_train = load_mnist_labels(path, 'train-labels-idx1-ubyte.gz')
     X_test = load_mnist_images(path, 't10k-images-idx3-ubyte.gz')
@@ -133,7 +133,7 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data/cifar10/', plotable=F
     - `Code references <https://teratail.com/questions/28932>`_
     """
 
-    print("Load or Download cifar10 > {}".format(path))
+    print(("Load or Download cifar10 > {}".format(path)))
 
     #Helper function to unpickle the data
     def unpickle(file):
@@ -184,7 +184,7 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data/cifar10/', plotable=F
         import matplotlib.pyplot as plt
         fig = plt.figure(1)
 
-        print('Shape of a training image: X_train[0]',X_train[0].shape)
+        print(('Shape of a training image: X_train[0]',X_train[0].shape))
 
         plt.ion()       # interactive mode
         count = 1
@@ -206,10 +206,10 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data/cifar10/', plotable=F
         plt.draw()      # interactive mode
         plt.pause(3)   # interactive mode
 
-        print("X_train:",X_train.shape)
-        print("y_train:",y_train.shape)
-        print("X_test:",X_test.shape)
-        print("y_test:",y_test.shape)
+        print(("X_train:",X_train.shape))
+        print(("y_train:",y_train.shape))
+        print(("X_test:",X_test.shape))
+        print(("y_test:",y_test.shape))
 
     X_train = np.asarray(X_train, dtype=np.float32)
     X_test = np.asarray(X_test, dtype=np.float32)
@@ -269,7 +269,7 @@ def load_ptb_dataset(path='data/ptb/'):
     ---------------
     - `Manual download <http://www.fit.vutbr.cz/~imikolov/rnnlm/simple-examples.tgz>`_
     """
-    print("Load or Download Penn TreeBank (PTB) dataset > {}".format(path))
+    print(("Load or Download Penn TreeBank (PTB) dataset > {}".format(path)))
 
     #Maybe dowload and uncompress tar, or load exsisting files
     filename = 'simple-examples.tgz'
@@ -319,7 +319,7 @@ def load_matt_mahoney_text8_dataset(path='data/mm_test8/'):
     >>> print('Data size', len(words))
     """
 
-    print("Load or Download matt_mahoney_text8 Dataset> {}".format(path))
+    print(("Load or Download matt_mahoney_text8 Dataset> {}".format(path)))
 
     filename = 'text8.zip'
     url = 'http://mattmahoney.net/dc/'
@@ -431,7 +431,7 @@ def load_nietzsche_dataset(path='data/nietzsche/'):
     >>> words = basic_clean_str(words)
     >>> words = words.split()
     """
-    print("Load or Download nietzsche dataset > {}".format(path))
+    print(("Load or Download nietzsche dataset > {}".format(path)))
 
     filename = "nietzsche.txt"
     url = 'https://s3.amazonaws.com/text-datasets/'
@@ -466,7 +466,7 @@ def load_wmt_en_fr_dataset(path='data/wmt_en_fr/'):
 
     def gunzip_file(gz_path, new_path):
         """Unzips from gz_path into new_path."""
-        print("Unpacking %s to %s" % (gz_path, new_path))
+        print(("Unpacking %s to %s" % (gz_path, new_path)))
         with gzip.open(gz_path, "rb") as gz_file:
             with open(new_path, "wb") as new_file:
                 for line in gz_file:
@@ -488,7 +488,7 @@ def load_wmt_en_fr_dataset(path='data/wmt_en_fr/'):
         dev_name = "newstest2013"
         dev_path = os.path.join(path, "newstest2013")
         if not (gfile.Exists(dev_path + ".fr") and gfile.Exists(dev_path + ".en")):
-            print("Extracting tgz file %s" % dev_file)
+            print(("Extracting tgz file %s" % dev_file))
             with tarfile.open(dev_file, "r:gz") as dev_tar:
               fr_dev_file = dev_tar.getmember("dev/" + dev_name + ".fr")
               en_dev_file = dev_tar.getmember("dev/" + dev_name + ".en")
@@ -498,7 +498,7 @@ def load_wmt_en_fr_dataset(path='data/wmt_en_fr/'):
               dev_tar.extract(en_dev_file, path)
         return dev_path
 
-    print("Load or Download WMT English-to-French translation > {}".format(path))
+    print(("Load or Download WMT English-to-French translation > {}".format(path)))
 
     train_path = get_wmt_enfr_train_set(path)
     dev_path = get_wmt_enfr_dev_set(path)
@@ -552,7 +552,7 @@ def save_npz(save_list=[], name='model.npz', sess=None):
     np.savez(name, params=save_list_var)
     save_list_var = None
     del save_list_var
-    print("[*] %s saved" % name)
+    print(("[*] %s saved" % name))
 
     ## save params into a dictionary
     # rename_dict = {}
@@ -656,12 +656,12 @@ def load_and_assign_npz(sess=None, name=None, network=None):
     assert network is not None
     assert sess is not None
     if not os.path.exists(name):
-        print("[!] Load {} failed!".format(name))
+        print(("[!] Load {} failed!".format(name)))
         return False
     else:
         params = load_npz(name=name)
         assign_params(sess, params, network)
-        print("[*] Load {} SUCCESS!".format(name))
+        print(("[*] Load {} SUCCESS!".format(name)))
         return network
 
 # Load and save variables
@@ -693,7 +693,7 @@ def load_npy_to_any(path='', name='file.npy'):
         try:
             return npy
         except:
-            print("[!] Fail to load %s" % file_path)
+            print(("[!] Fail to load %s" % file_path))
             exit()
 
 
@@ -716,7 +716,7 @@ def npz_to_W_pdf(path=None, regx='w1pre_[0-9]+\.(npz)'):
     file_list = load_file_list(path=path, regx=regx)
     for f in file_list:
         W = load_npz(path, f)[0]
-        print("%s --> %s" % (f, f.split('.')[0]+'.pdf'))
+        print(("%s --> %s" % (f, f.split('.')[0]+'.pdf')))
         visualize.W(W, second=10, saveable=True, name=f.split('.')[0], fig_idx=2012)
 
 
@@ -745,8 +745,8 @@ def load_file_list(path=None, regx='\.npz', printable=True):
             return_list.append(f)
     # return_list.sort()
     if printable:
-        print('Match file list = %s' % return_list)
-        print('Number of files = %d' % len(return_list))
+        print(('Match file list = %s' % return_list))
+        print(('Number of files = %d' % len(return_list)))
     return return_list
 
 def load_folder_list(path=""):
@@ -780,12 +780,12 @@ def exists_or_mkdir(path, verbose=True):
     """
     if not os.path.exists(path):
         if verbose:
-            print("[*] creates %s ..." % path)
+            print(("[*] creates %s ..." % path))
         os.makedirs(path)
         return False
     else:
         if verbose:
-            print("[!] %s exists ..." % path)
+            print(("[!] %s exists ..." % path))
         return True
 
 def maybe_download_and_extract(filename, working_directory, url_source, extract=False, expected_bytes=None):
@@ -827,7 +827,7 @@ def maybe_download_and_extract(filename, working_directory, url_source, extract=
                 sys.stdout.write("\r" "Downloading " + filename + "...%d%%" % percent)
                 sys.stdout.flush()
         if sys.version_info[0] == 2:
-            from urllib import urlretrieve
+            from urllib.request import urlretrieve
         else:
             from urllib.request import urlretrieve
         filepath = os.path.join(working_directory, filename)
@@ -840,7 +840,7 @@ def maybe_download_and_extract(filename, working_directory, url_source, extract=
         _download(filename, working_directory, url_source)
         print()
         statinfo = os.stat(filepath)
-        print('Succesfully downloaded', filename, statinfo.st_size, 'bytes.')
+        print(('Succesfully downloaded', filename, statinfo.st_size, 'bytes.'))
         if(not(expected_bytes is None) and (expected_bytes != statinfo.st_size)):
             raise Exception('Failed to verify ' + filename + '. Can you get to it with a browser?')
         if(extract):

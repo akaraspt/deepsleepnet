@@ -22,19 +22,19 @@ def print_performance(cm):
     f1 = (2 * precision * recall) / (precision + recall)
     mf1 = np.mean(f1)
 
-    print "Sample: {}".format(np.sum(cm))
-    print "W: {}".format(tpfn[W])
-    print "N1: {}".format(tpfn[N1])
-    print "N2: {}".format(tpfn[N2])
-    print "N3: {}".format(tpfn[N3])
-    print "REM: {}".format(tpfn[REM])
-    print "Confusion matrix:"
-    print cm
-    print "Precision: {}".format(precision)
-    print "Recall: {}".format(recall)
-    print "F1: {}".format(f1)
-    print "Overall accuracy: {}".format(acc)
-    print "Macro-F1 accuracy: {}".format(mf1)
+    print("Sample: {}".format(np.sum(cm)))
+    print("W: {}".format(tpfn[W]))
+    print("N1: {}".format(tpfn[N1]))
+    print("N2: {}".format(tpfn[N2]))
+    print("N3: {}".format(tpfn[N3]))
+    print("REM: {}".format(tpfn[REM]))
+    print("Confusion matrix:")
+    print(cm)
+    print("Precision: {}".format(precision))
+    print("Recall: {}".format(recall))
+    print("F1: {}".format(f1))
+    print("Overall accuracy: {}".format(acc))
+    print("Macro-F1 accuracy: {}".format(mf1))
 
 
 def perf_overall(data_dir):
@@ -49,8 +49,8 @@ def perf_overall(data_dir):
     y_true = []
     y_pred = []
     for fpath in outputfiles:
-        with np.load(fpath) as f:
-            print(f["y_true"].shape)
+        with np.load(fpath,allow_pickle=True) as f:
+            print((f["y_true"].shape))
             if len(f["y_true"].shape) == 1:
                 if len(f["y_true"]) < 10:
                     f_y_true = np.hstack(f["y_true"])
@@ -65,10 +65,10 @@ def perf_overall(data_dir):
             y_true.extend(f_y_true)
             y_pred.extend(f_y_pred)
 
-            print "File: {}".format(fpath)
+            print("File: {}".format(fpath))
             cm = confusion_matrix(f_y_true, f_y_pred, labels=[0, 1, 2, 3, 4])
             print_performance(cm)
-    print " "
+    print(" ")
 
     y_true = np.asarray(y_true)
     y_pred = np.asarray(y_pred)
@@ -79,7 +79,7 @@ def perf_overall(data_dir):
 
     total = np.sum(cm, axis=1)
 
-    print "DeepSleepNet (current)"
+    print("DeepSleepNet (current)")
     print_performance(cm)
 
 
@@ -148,26 +148,26 @@ def main():
         [33, 60, 92, 3, 719]
     ], dtype=np.int)
 
-    print " "
-    print "Sharma (2017)"
+    print(" ")
+    print("Sharma (2017)")
     print_performance(sharman2017)
-    print " "
-    print "Hassan (2017)"
+    print(" ")
+    print("Hassan (2017)")
     print_performance(hassan2017)
-    print " "
-    print "Tsinalis (2016)"
+    print(" ")
+    print("Tsinalis (2016)")
     print_performance(tsinalis2016)
-    print " "
-    print "Dong (2016)"
+    print(" ")
+    print("Dong (2016)")
     print_performance(dong2016)
-    print " "
-    print "Hsu (2013)"
+    print(" ")
+    print("Hsu (2013)")
     print_performance(hsu2013)
-    print " "
-    print "Liang (2012)"
+    print(" ")
+    print("Liang (2012)")
     print_performance(liang2012)
-    print " "
-    print "Fraiwan (2012)"
+    print(" ")
+    print("Fraiwan (2012)")
     print_performance(fraiwan2012)
 
 

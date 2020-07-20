@@ -8,7 +8,7 @@ import json
 import stat
 import os
 import zipfile
-import httplib as http
+import http.client as http
 
 from subprocess import call
 from uuid import uuid4

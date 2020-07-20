@@ -104,7 +104,7 @@ def seq_minibatches(inputs, targets, batch_size, seq_length, stride=1):
                               dtype=inputs.dtype)
         seq_targets = np.zeros((batch_size, seq_length) + targets.shape[1:],
                                dtype=targets.dtype)
-        for b_idx in xrange(batch_size):
+        for b_idx in range(batch_size):
             start_seq_idx = start_idx + (b_idx * stride)
             end_seq_idx = start_seq_idx + seq_length
             seq_inputs[b_idx] = inputs[start_seq_idx:end_seq_idx]

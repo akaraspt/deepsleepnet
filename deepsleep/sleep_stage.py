@@ -24,4 +24,4 @@ def print_n_samples_each_class(labels):
     unique_labels = np.unique(labels)
     for c in unique_labels:
         n_samples = len(np.where(labels == c)[0])
-        print "{}: {}".format(class_dict[c], n_samples)
+        print("{}: {}".format(class_dict[c], n_samples))

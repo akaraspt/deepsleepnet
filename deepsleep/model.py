@@ -29,13 +29,13 @@ class DeepFeatureNet(object):
     def _build_placeholder(self):
         # Input
         name = "x_train" if self.is_train else "x_valid"
-        self.input_var = tf.placeholder(
+        self.input_var = tf.compat.v1.placeholder(
             tf.float32, 
             shape=[self.batch_size, self.input_dims, 1, 1],
             name=name + "_inputs"
         )
         # Target
-        self.target_var = tf.placeholder(
+        self.target_var = tf.compat.v1.placeholder(
             tf.int32, 
             shape=[self.batch_size, ],
             name=name + "_targets"
@@ -47,7 +47,7 @@ class DeepFeatureNet(object):
         input_dims = input_shape[1].value
         n_in_filters = input_shape[3].value
         name = "l{}_conv".format(self.layer_idx)
-        with tf.variable_scope(name) as scope:
+        with tf.compat.v1.variable_scope(name) as scope:
             output = conv_1d(name="conv1d", input_var=input_var, filter_shape=[filter_size, 1, n_in_filters, n_filters], stride=stride, bias=None, wd=wd)
             
             # # MONITORING
@@ -154,7 +154,7 @@ class DeepFeatureNet(object):
 
         # Concat
         name = "l{}_concat".format(self.layer_idx)
-        network = tf.concat(1, output_conns, name=name)
+        network = tf.concat(axis=1, values=output_conns, name=name)
         self.activations.append((name, network))
         self.layer_idx += 1
 
@@ -174,7 +174,7 @@ class DeepFeatureNet(object):
         self._build_placeholder()
 
         # Get loss and prediction operations
-        with tf.variable_scope(self.name) as scope:
+        with tf.compat.v1.variable_scope(self.name) as scope:
             
             # Reuse variables for validation
             if self.reuse_params:
@@ -196,21 +196,21 @@ class DeepFeatureNet(object):
 
             # Cross-entropy loss
             loss = tf.nn.sparse_softmax_cross_entropy_with_logits(
-                self.logits,
-                self.target_var,
+                logits=self.logits,
+                labels=self.target_var,
                 name="sparse_softmax_cross_entropy_with_logits"
             )
             loss = tf.reduce_mean(loss, name="cross_entropy")
 
             # Regularization loss
             regular_loss = tf.add_n(
-                tf.get_collection("losses", scope=scope.name + "\/"),
+                tf.compat.v1.get_collection("losses", scope=scope.name + "\/"),
                 name="regular_loss"
             )
 
             # print " "
             # print "Params to compute regularization loss:"
-            # for p in tf.get_collection("losses", scope=scope.name + "\/"):
+            # for p in tf.compat.v1.get_collection("losses", scope=scope.name + "\/"):
             #     print p.name
             # print " "
 
@@ -256,13 +256,13 @@ class DeepSleepNet(DeepFeatureNet):
     def _build_placeholder(self):
         # Input
         name = "x_train" if self.is_train else "x_valid"
-        self.input_var = tf.placeholder(
+        self.input_var = tf.compat.v1.placeholder(
             tf.float32, 
             shape=[self.batch_size*self.seq_length, self.input_dims, 1, 1],
             name=name + "_inputs"
         )
         # Target
-        self.target_var = tf.placeholder(
+        self.target_var = tf.compat.v1.placeholder(
             tf.int32, 
             shape=[self.batch_size*self.seq_length, ],
             name=name + "_targets"
@@ -279,7 +279,7 @@ class DeepSleepNet(DeepFeatureNet):
 
         # Fully-connected to select some part of the output to add with the output from bi-directional LSTM
         name = "l{}_fc".format(self.layer_idx)
-        with tf.variable_scope(name) as scope:
+        with tf.compat.v1.variable_scope(name) as scope:
             output_tmp = fc(name="fc", input_var=network, n_hiddens=1024, bias=None, wd=0)
             output_tmp = batch_norm_new(name="bn", input_var=output_tmp, is_train=self.is_train)
             # output_tmp = leaky_relu(name="leaky_relu", input_var=output_tmp)
@@ -304,36 +304,34 @@ class DeepSleepNet(DeepFeatureNet):
         # Bidirectional LSTM network
         name = "l{}_bi_lstm".format(self.layer_idx)
         hidden_size = 512   # will output 1024 (512 forward, 512 backward)
-        with tf.variable_scope(name) as scope:
-            fw_lstm_cell = tf.nn.rnn_cell.LSTMCell(hidden_size,
-                                                   use_peepholes=True,
-                                                   state_is_tuple=True)
-            bw_lstm_cell = tf.nn.rnn_cell.LSTMCell(hidden_size,
-                                                   use_peepholes=True,
-                                                   state_is_tuple=True)
-            if self.use_dropout_sequence:
-                keep_prob = 0.5 if self.is_train else 1.0
-                fw_lstm_cell = tf.nn.rnn_cell.DropoutWrapper(
-                    fw_lstm_cell,
-                    output_keep_prob=keep_prob
-                )
-                bw_lstm_cell = tf.nn.rnn_cell.DropoutWrapper(
-                    bw_lstm_cell,
-                    output_keep_prob=keep_prob
-                )
+        with tf.compat.v1.variable_scope(name) as scope:
 
-            fw_cell = tf.nn.rnn_cell.MultiRNNCell([fw_lstm_cell] * self.n_rnn_layers,
-                                                  state_is_tuple=True)
-            bw_cell = tf.nn.rnn_cell.MultiRNNCell([bw_lstm_cell] * self.n_rnn_layers,
-                                                  state_is_tuple=True)
+            def lstm_cell():
+
+                cell = tf.compat.v1.nn.rnn_cell.LSTMCell(hidden_size,                               
+                                                use_peepholes=True,
+                                                state_is_tuple=True,
+                                                reuse=tf.compat.v1.get_variable_scope().reuse) 
+                if self.use_dropout_sequence:
+                    keep_prob = 0.5 if self.is_train else 1.0
+                    cell = tf.compat.v1.nn.rnn_cell.DropoutWrapper(
+                        cell,
+                        output_keep_prob=keep_prob
+                    )
+
+                return cell
+
+            fw_cell = tf.compat.v1.nn.rnn_cell.MultiRNNCell([lstm_cell() for _ in range(self.n_rnn_layers)], state_is_tuple = True)
+            bw_cell = tf.compat.v1.nn.rnn_cell.MultiRNNCell([lstm_cell() for _ in range(self.n_rnn_layers)], state_is_tuple = True)
 
             # Initial state of RNN
             self.fw_initial_state = fw_cell.zero_state(self.batch_size, tf.float32)
             self.bw_initial_state = bw_cell.zero_state(self.batch_size, tf.float32)
 
             # Feedforward to MultiRNNCell
-            list_rnn_inputs = tf.unpack(seq_input, axis=1)
-            outputs, fw_state, bw_state = tf.nn.bidirectional_rnn(
+            list_rnn_inputs = tf.unstack(seq_input, axis=1)
+            #outputs, fw_state, bw_state = tf.nn.bidirectional_rnn(
+            outputs, fw_state, bw_state = tf.compat.v1.nn.static_bidirectional_rnn(
                 cell_fw=fw_cell,
                 cell_bw=bw_cell,
                 inputs=list_rnn_inputs,
@@ -344,8 +342,8 @@ class DeepSleepNet(DeepFeatureNet):
             if self.return_last:
                 network = outputs[-1]
             else:
-                network = tf.reshape(tf.concat(1, outputs), [-1, hidden_size*2],
-                                     name=name)
+                network = tf.reshape(tf.concat(axis=1, values=outputs), [-1, hidden_size*2],
+                                    name=name)
             self.activations.append((name, network))
             self.layer_idx +=1
 
@@ -379,7 +377,7 @@ class DeepSleepNet(DeepFeatureNet):
         self._build_placeholder()
 
         # Get loss and prediction operations
-        with tf.variable_scope(self.name) as scope:
+        with tf.compat.v1.variable_scope(self.name) as scope:
             
             # Reuse variables for validation
             if self.reuse_params:
@@ -400,7 +398,7 @@ class DeepSleepNet(DeepFeatureNet):
             ######### Compute loss #########
 
             # Weighted cross-entropy loss for a sequence of logits (per example)
-            loss = tf.nn.seq2seq.sequence_loss_by_example(
+            loss = tf.contrib.legacy_seq2seq.sequence_loss_by_example(
                 [self.logits],
                 [self.target_var],
                 [tf.ones([self.batch_size * self.seq_length])],
@@ -410,13 +408,13 @@ class DeepSleepNet(DeepFeatureNet):
 
             # Regularization loss
             regular_loss = tf.add_n(
-                tf.get_collection("losses", scope=scope.name + "\/"),
+                tf.compat.v1.get_collection("losses", scope=scope.name + "\/"),
                 name="regular_loss"
             )
 
             # print " "
             # print "Params to compute regularization loss:"
-            # for p in tf.get_collection("losses", scope=scope.name + "\/"):
+            # for p in tf.compat.v1.get_collection("losses", scope=scope.name + "\/"):
             #     print p.name
             # print " "
 

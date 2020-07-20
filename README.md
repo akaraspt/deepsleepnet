@@ -15,16 +15,19 @@ This figure illustrates one interpretable LSTM cell from the model, which learn 
 ![Sleep Onset Cell](./img/sleep_onset_cell.png)
 
 ## Environment ##
-- Ubuntu 16.04
-- CUDA toolkit 8.0 and CuDNN v5
-- Python 2.7
-- [tensorflow-gpu (0.12.1)](https://www.tensorflow.org/versions/r0.12/get_started/os_setup)
+
+The following setup has been used to reproduce this work:
+
+- Ubuntu 18.04 / Windows 10 1903 x64
+- CUDA toolkit 10.0 and CuDNN v7.6.4
+- Python 3.5.4 x64
+- tensorflow-gpu (1.15.2)
 - matplotlib (1.5.3)
 - scikit-learn (0.19.1)
-- scipy (1.0.0)
-- numpy (1.11.1)
-- pandas (0.18.1)
-- mne (0.15.2)
+- scipy (1.4.1)
+- numpy (1.18.2)
+- pandas (0.25.3)
+- mne (0.20.0)
 - [tensorlayer](https://github.com/zsdonghao/tensorlayer) (optional)
 - MongoDB (optional)
 - [eAE](https://github.com/aoehmichen/eae-docker) (optional)

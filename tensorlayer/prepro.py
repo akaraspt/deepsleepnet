@@ -17,7 +17,7 @@ import threading
 # import Queue  # <-- donot work for py3
 is_py2 = sys.version[0] == '2'
 if is_py2:
-    import Queue as queue
+    import queue as queue
 else:
     import queue as queue
 
@@ -935,10 +935,10 @@ def zca_whitening(x, principal_components):
     principal_components : matrix from ``get_zca_whitening_principal_components_img``.
     """
     # flatx = np.reshape(x, (x.size))
-    print(principal_components.shape, x.shape)  # ((28160, 28160), (160, 176, 1))
+    print((principal_components.shape, x.shape))  # ((28160, 28160), (160, 176, 1))
     # flatx = np.reshape(x, (x.shape))
     # flatx = np.reshape(x, (x.shape[0], ))
-    print(flatx.shape)  # (160, 176, 1)
+    print((flatx.shape))  # (160, 176, 1)
     whitex = np.dot(flatx, principal_components)
     x = np.reshape(whitex, (x.shape[0], x.shape[1], x.shape[2]))
     return x
@@ -1358,7 +1358,7 @@ def sequences_get_mask(sequences, pad_val=0):
     """
     mask = np.ones_like(sequences)
     for i, seq in enumerate(sequences):
-        for i_w in reversed(range(len(seq))):
+        for i_w in reversed(list(range(len(seq)))):
             if seq[i_w] == pad_val:
                 mask[i, i_w] = 0
             else:
@@ -1407,7 +1407,7 @@ def distorted_images(images=None, height=24, width=24):
     >>> X_train, y_train, X_test, y_test = tl.files.load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=False)
     >>> sess = tf.InteractiveSession()
     >>> batch_size = 128
-    >>> x = tf.placeholder(tf.float32, shape=[batch_size, 32, 32, 3])
+    >>> x = tf.compat.v1.placeholder(tf.float32, shape=[batch_size, 32, 32, 3])
     >>> distorted_images_op = tl.preprocess.distorted_images(images=x, height=24, width=24)
     >>> sess.run(tf.initialize_all_variables())
     >>> feed_dict={x: X_train[0:batch_size,:,:,:]}
@@ -1449,10 +1449,10 @@ def distorted_images(images=None, height=24, width=24):
         # 4. Randomly change contrast.
         image = tf.image.random_contrast(image, lower=0.2, upper=1.8)
         # 5. Subtract off the mean and divide by the variance of the pixels.
-        image = tf.image.per_image_whitening(image)
+        image = tf.image.per_image_standardization(image)
         # 6. Append the image to a batch.
         image = tf.expand_dims(image, 0)
-        return tf.concat(0, [distorted_x, image]), tf.add(i, 1)
+        return tf.concat(axis=0, values=[distorted_x, image]), tf.add(i, 1)
 
     result = tf.while_loop(cond=c, body=body, loop_vars=(distorted_x, i), parallel_iterations=16)
     return result
@@ -1484,7 +1484,7 @@ def crop_central_whiten_images(images=None, height=24, width=24):
     >>> X_train, y_train, X_test, y_test = tl.files.load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=False)
     >>> sess = tf.InteractiveSession()
     >>> batch_size = 128
-    >>> x = tf.placeholder(tf.float32, shape=[batch_size, 32, 32, 3])
+    >>> x = tf.compat.v1.placeholder(tf.float32, shape=[batch_size, 32, 32, 3])
     >>> central_images_op = tl.preprocess.crop_central_whiten_images(images=x, height=24, width=24)
     >>> sess.run(tf.initialize_all_variables())
     >>> feed_dict={x: X_train[0:batch_size,:,:,:]}
@@ -1520,10 +1520,10 @@ def crop_central_whiten_images(images=None, height=24, width=24):
         # 1. Crop the central [height, width] of the image.
         image = tf.image.resize_image_with_crop_or_pad(tf.gather(images, i), height, width)
         # 2. Subtract off the mean and divide by the variance of the pixels.
-        image = tf.image.per_image_whitening(image)
+        image = tf.image.per_image_standardization(image)
         # 5. Append the image to a batch.
         image = tf.expand_dims(image, 0)
-        return tf.concat(0, [central_x, image]), tf.add(i, 1)
+        return tf.concat(axis=0, values=[central_x, image]), tf.add(i, 1)
 
     result = tf.while_loop(cond=c, body=body, loop_vars=(central_x, i), parallel_iterations=16)
     return result

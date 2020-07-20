@@ -21,7 +21,7 @@ def fit(sess, network, train_op, cost, X_train, y_train, x, y_, acc=None, batch_
     network : a TensorLayer layer
         the network will be trained
     train_op : a TensorFlow optimizer
-        like tf.train.AdamOptimizer
+        like tf.compat.v1.train.AdamOptimizer
     X_train : numpy array
         the input of training data
     y_train : numpy array
@@ -71,7 +71,7 @@ def fit(sess, network, train_op, cost, X_train, y_train, x, y_, acc=None, batch_
     --------
         If tensorboard=True, the global_variables_initializer will be run inside the fit function
         in order to initalize the automatically generated summary nodes used for tensorboard visualization,
-        thus tf.global_variables_initializer().run() before the fit() call will be undefined.
+        thus tf.compat.v1.global_variables_initializer().run() before the fit() call will be undefined.
     """
     assert X_train.shape[0] >= batch_size, "Number of training examples should be bigger than the batch size"
 
@@ -83,17 +83,17 @@ def fit(sess, network, train_op, cost, X_train, y_train, x, y_, acc=None, batch_
         #Only write summaries for more recent TensorFlow versions
         if hasattr(tf, 'summary') and hasattr(tf.summary, 'FileWriter'):
             if tensorboard_graph_vis:
-                train_writer = tf.summary.FileWriter('logs/train',sess.graph)
-                val_writer = tf.summary.FileWriter('logs/validation',sess.graph)
+                train_writer = tf.compat.v1.summary.FileWriter('logs/train',sess.graph)
+                val_writer = tf.compat.v1.summary.FileWriter('logs/validation',sess.graph)
             else:
-                train_writer = tf.summary.FileWriter('logs/train')
-                val_writer = tf.summary.FileWriter('logs/validation')
+                train_writer = tf.compat.v1.summary.FileWriter('logs/train')
+                val_writer = tf.compat.v1.summary.FileWriter('logs/validation')
 
         #Set up summary nodes
         if(tensorboard_weight_histograms):
             for param in network.all_params:
                 if hasattr(tf, 'summary') and hasattr(tf.summary, 'histogram'):
-                    print('Param name ', param.name)
+                    print(('Param name ', param.name))
                     tf.summary.histogram(param.name, param)
 
         if hasattr(tf, 'summary') and hasattr(tf.summary, 'histogram'):
@@ -142,7 +142,7 @@ def fit(sess, network, train_op, cost, X_train, y_train, x, y_, acc=None, batch_
 
         if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
             if (X_val is not None) and (y_val is not None):
-                print("Epoch %d of %d took %fs" % (epoch + 1, n_epoch, time.time() - start_time))
+                print(("Epoch %d of %d took %fs" % (epoch + 1, n_epoch, time.time() - start_time)))
                 if eval_train is True:
                     train_loss, train_acc, n_batch = 0, 0, 0
                     for X_train_a, y_train_a in iterate.minibatches(
@@ -156,9 +156,9 @@ def fit(sess, network, train_op, cost, X_train, y_train, x, y_, acc=None, batch_
                         else:
                             err = sess.run(cost, feed_dict=feed_dict)
                         train_loss += err;  n_batch += 1
-                    print("   train loss: %f" % (train_loss/ n_batch))
+                    print(("   train loss: %f" % (train_loss/ n_batch)))
                     if acc is not None:
-                        print("   train acc: %f" % (train_acc/ n_batch))
+                        print(("   train acc: %f" % (train_acc/ n_batch)))
                 val_loss, val_acc, n_batch = 0, 0, 0
                 for X_val_a, y_val_a in iterate.minibatches(
                                             X_val, y_val, batch_size, shuffle=True):
@@ -171,12 +171,12 @@ def fit(sess, network, train_op, cost, X_train, y_train, x, y_, acc=None, batch_
                     else:
                         err = sess.run(cost, feed_dict=feed_dict)
                     val_loss += err; n_batch += 1
-                print("   val loss: %f" % (val_loss/ n_batch))
+                print(("   val loss: %f" % (val_loss/ n_batch)))
                 if acc is not None:
-                    print("   val acc: %f" % (val_acc/ n_batch))
+                    print(("   val acc: %f" % (val_acc/ n_batch)))
             else:
-                print("Epoch %d of %d took %fs, loss %f" % (epoch + 1, n_epoch, time.time() - start_time, loss_ep))
-    print("Total training time: %fs" % (time.time() - start_time_begin))
+                print(("Epoch %d of %d took %fs, loss %f" % (epoch + 1, n_epoch, time.time() - start_time, loss_ep)))
+    print(("Total training time: %fs" % (time.time() - start_time_begin)))
 
 
 def test(sess, network, acc, X_test, y_test, x, y_, batch_size, cost=None):
@@ -216,8 +216,8 @@ def test(sess, network, acc, X_test, y_test, x, y_, batch_size, cost=None):
         feed_dict = {x: X_test, y_: y_test}
         feed_dict.update(dp_dict)
         if cost is not None:
-            print("   test loss: %f" % sess.run(cost, feed_dict=feed_dict))
-        print("   test acc: %f" % sess.run(acc, feed_dict=feed_dict))
+            print(("   test loss: %f" % sess.run(cost, feed_dict=feed_dict)))
+        print(("   test acc: %f" % sess.run(acc, feed_dict=feed_dict)))
             # print("   test acc: %f" % np.mean(y_test == sess.run(y_op,
             #                                           feed_dict=feed_dict)))
     else:
@@ -234,8 +234,8 @@ def test(sess, network, acc, X_test, y_test, x, y_, batch_size, cost=None):
                 ac = sess.run(acc, feed_dict=feed_dict)
             test_acc += ac; n_batch += 1
         if cost is not None:
-            print("   test loss: %f" % (test_loss/ n_batch))
-        print("   test acc: %f" % (test_acc/ n_batch))
+            print(("   test loss: %f" % (test_loss/ n_batch)))
+        print(("   test acc: %f" % (test_acc/ n_batch)))
 
 
 def predict(sess, network, X, x, y_op):
@@ -292,10 +292,10 @@ def evaluation(y_test=None, y_predict=None, n_classes=None):
     f1    = f1_score(y_test, y_predict, average = None, labels = [x for x in range(n_classes)])
     f1_macro = f1_score(y_test, y_predict, average='macro')
     acc   = accuracy_score(y_test, y_predict)
-    print('confusion matrix: \n',c_mat)
-    print('f1-score:',f1)
-    print('f1-score(macro):',f1_macro)   # same output with > f1_score(y_true, y_pred, average='macro')
-    print('accuracy-score:', acc)
+    print(('confusion matrix: \n',c_mat))
+    print(('f1-score:',f1))
+    print(('f1-score(macro):',f1_macro))   # same output with > f1_score(y_true, y_pred, average='macro')
+    print(('accuracy-score:', acc))
     return c_mat, f1, acc, f1_macro
 
 def dict_to_one(dp_dict={}):
@@ -358,12 +358,12 @@ def class_balancing_oversample(X_train=None, y_train=None, printable=True):
     from collections import Counter
     c = Counter(y_train)
     if printable:
-        print('the occurrence number of each stage: %s' % c.most_common())
-        print('the least stage is Label %s have %s instances' % c.most_common()[-1])
-        print('the most stage is  Label %s have %s instances' % c.most_common(1)[0])
+        print(('the occurrence number of each stage: %s' % c.most_common()))
+        print(('the least stage is Label %s have %s instances' % c.most_common()[-1]))
+        print(('the most stage is  Label %s have %s instances' % c.most_common(1)[0]))
     most_num = c.most_common(1)[0][1]
     if printable:
-        print('most num is %d, all classes tend to be this num' % most_num)
+        print(('most num is %d, all classes tend to be this num' % most_num))
 
     locations = {}
     number = {}
@@ -374,7 +374,7 @@ def class_balancing_oversample(X_train=None, y_train=None, printable=True):
     if printable:
         print('convert list(np.array) to dict format')
     X = {}  # convert list to dict
-    for lab, num in number.items():
+    for lab, num in list(number.items()):
         X[lab] = X_train[locations[lab]]
 
     # oversampling
@@ -387,15 +387,15 @@ def class_balancing_oversample(X_train=None, y_train=None, printable=True):
                 break
             X[key] = np.vstack((X[key], temp))
     if printable:
-        print('first features of label 0 >', len(X[0][0]))
+        print(('first features of label 0 >', len(X[0][0])))
         print('the occurrence num of each stage after oversampling')
     for key in X:
-        print(key, len(X[key]))
+        print((key, len(X[key])))
     if printable:
         print('make each stage have same num of instances')
     for key in X:
         X[key] = X[key][0:most_num,:]
-        print(key, len(X[key]))
+        print((key, len(X[key])))
 
     # convert dict to list
     if printable:
@@ -408,7 +408,7 @@ def class_balancing_oversample(X_train=None, y_train=None, printable=True):
     # print(len(X_train), len(y_train))
     c = Counter(y_train)
     if printable:
-        print('the occurrence number of each stage after oversampling: %s' % c.most_common())
+        print(('the occurrence number of each stage after oversampling: %s' % c.most_common()))
     # ================ End of Classes balancing
     return X_train, y_train
 
