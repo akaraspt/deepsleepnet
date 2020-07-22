@@ -28,6 +28,7 @@ The following setup has been used to reproduce this work:
 - numpy (1.18.2)
 - pandas (0.25.3)
 - mne (0.20.0)
+- seaborn (0.10.1)
 - [tensorlayer](https://github.com/zsdonghao/tensorlayer) (optional)
 - MongoDB (optional)
 - [eAE](https://github.com/aoehmichen/eae-docker) (optional)
