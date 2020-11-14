@@ -3,7 +3,7 @@ A deep learning model for automatic sleep stage scoring based on raw, single-cha
 
 **We have published a more efficient deep learning model, named TinySleepNet, which is much smaller and can achieve a better scoring performance.**
 
-***TinySleepNet: An Efficient Deep Learning Model for Sleep Stage Scoring based on Raw Single-Channel EEG by Akara Supratak and Yike Guo from The Faculty of ICT, Mahidol University and Imperial College London respectively*. [[paper](https://ieeexplore.ieee.org/document/9176741)][[github](https://github.com/akaraspt/tinysleepnet)]***
+***TinySleepNet: An Efficient Deep Learning Model for Sleep Stage Scoring based on Raw Single-Channel EEG by Akara Supratak and Yike Guo from The Faculty of ICT, Mahidol University and Imperial College London respectively*. [[paper](https://ieeexplore.ieee.org/document/9176741)][[github](https://github.com/akaraspt/tinysleepnet)]**
 
 
 
