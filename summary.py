@@ -11,8 +11,47 @@ from sklearn.metrics import confusion_matrix, f1_score
 
 from deepsleep.sleep_stage import W, N1, N2, N3, REM
 
+import matplotlib.pyplot as plt
+import seaborn as sn
 
-def print_performance(cm):
+FL_acc = []
+FL_F1acc = []
+
+
+def print_performance(cm,fignum):
+    if fignum == 20200223:
+        fignum = '_DeepSleepNet'
+    tp = np.diagonal(cm).astype(np.float)
+    tpfp = np.sum(cm, axis=0).astype(np.float) # sum of each col
+    tpfn = np.sum(cm, axis=1).astype(np.float) # sum of each row
+    acc = np.sum(tp) / np.sum(cm)
+    precision = tp / tpfp
+    recall = tp / tpfn
+    f1 = (2 * precision * recall) / (precision + recall)
+    mf1 = np.mean(f1)
+
+    y_formatter = plt.ScalarFormatter(useOffset=False)
+    FL_acc.append(acc)
+    FL_F1acc.append(mf1)
+    sn.heatmap(cm, annot=True, annot_kws={"size": 10}, fmt='d')
+    plt.savefig('./results/ConfusionMatrix/subject'+str(fignum)+'.png', dpi=300)
+    plt.clf()
+
+    print("Sample: {}".format(np.sum(cm)))
+    print("W: {}".format(tpfn[W]))
+    print("N1: {}".format(tpfn[N1]))
+    print("N2: {}".format(tpfn[N2]))
+    print("N3: {}".format(tpfn[N3]))
+    print("REM: {}".format(tpfn[REM]))
+    print("Confusion matrix:")
+    print(cm)
+    print("Precision: {}".format(precision))
+    print("Recall: {}".format(recall))
+    print("F1: {}".format(f1))
+    print("Overall accuracy: {}".format(acc))
+    print("Macro-F1 accuracy: {}".format(mf1))
+
+def print_performance_(cm):
     tp = np.diagonal(cm).astype(np.float)
     tpfp = np.sum(cm, axis=0).astype(np.float) # sum of each col
     tpfn = np.sum(cm, axis=1).astype(np.float) # sum of each row
@@ -45,9 +84,9 @@ def perf_overall(data_dir):
         if re.match("^output_.+\d+\.npz", f):
             outputfiles.append(os.path.join(data_dir, f))
     outputfiles.sort()
-
     y_true = []
     y_pred = []
+    fignum = 0
     for fpath in outputfiles:
         with np.load(fpath,allow_pickle=True) as f:
             print((f["y_true"].shape))
@@ -67,9 +106,9 @@ def perf_overall(data_dir):
 
             print("File: {}".format(fpath))
             cm = confusion_matrix(f_y_true, f_y_pred, labels=[0, 1, 2, 3, 4])
-            print_performance(cm)
+            print_performance(cm,fignum)
+            fignum = fignum + 1
     print(" ")
-
     y_true = np.asarray(y_true)
     y_pred = np.asarray(y_pred)
 
@@ -78,9 +117,9 @@ def perf_overall(data_dir):
     mf1 = f1_score(y_true, y_pred, average="macro")
 
     total = np.sum(cm, axis=1)
-
+    print(" ")
     print("DeepSleepNet (current)")
-    print_performance(cm)
+    print_performance(cm,int(20200223))
 
 
 def main():
@@ -88,9 +127,23 @@ def main():
     parser.add_argument("--data_dir", type=str, default="/home/akara/Workspace/deepsleep_output/results/outputs",
                         help="Directory where to load prediction outputs")
     args = parser.parse_args()
-
     if args.data_dir is not None:
         perf_overall(data_dir=args.data_dir)
+
+
+    print(" ")
+    # print(FL_acc)
+    # print(FL_F1acc)
+    print("Average Overall for Every fold: " + str(sum(FL_acc)/len(FL_acc)))
+    print("Average Macro-F1 accuracy  for Every fold: " + str(sum(FL_F1acc)/len(FL_F1acc)))
+    
+    plt.title('Accuracy For Each Folds', fontsize=20) 
+    plt.ylabel('Accuracy', fontsize=14)
+    plt.xlabel('Folds', fontsize=14)
+    plt.plot(FL_acc, marker='s', color='r',label='Overall Accuracy')
+    plt.plot(FL_F1acc, marker='*', color='b',label = 'Macro-F1 Accuracy')
+    plt.legend(fontsize=12, loc='best')
+    plt.savefig('./results/'+'Accuracy.png', dpi=300)
 
     sharman2017 = np.asarray([
         [7944, 11, 12, 6, 30],
@@ -150,26 +203,25 @@ def main():
 
     print(" ")
     print("Sharma (2017)")
-    print_performance(sharman2017)
+    print_performance_(sharman2017)
     print(" ")
     print("Hassan (2017)")
-    print_performance(hassan2017)
+    print_performance_(hassan2017)
     print(" ")
     print("Tsinalis (2016)")
-    print_performance(tsinalis2016)
+    print_performance_(tsinalis2016)
     print(" ")
     print("Dong (2016)")
-    print_performance(dong2016)
+    print_performance_(dong2016)
     print(" ")
     print("Hsu (2013)")
-    print_performance(hsu2013)
+    print_performance_(hsu2013)
     print(" ")
     print("Liang (2012)")
-    print_performance(liang2012)
+    print_performance_(liang2012)
     print(" ")
     print("Fraiwan (2012)")
-    print_performance(fraiwan2012)
-
+    print_performance_(fraiwan2012)
 
 if __name__ == "__main__":
     main()

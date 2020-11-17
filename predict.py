@@ -572,10 +572,17 @@ def custom_run_epoch(
         "y_true": y_true,
         "y_pred": y
     }
-    save_path = os.path.join(
-        output_dir,
-        "output_subject{}.npz".format(subject_idx)
-    )
+    if subject_idx <= 9:
+        save_path = os.path.join(
+            output_dir,
+            "output_subject0{}.npz".format(subject_idx)
+        )
+    else:
+        save_path = os.path.join(
+            output_dir,
+            "output_subject{}.npz".format(subject_idx)
+        )
+        
     np.savez(save_path, **save_dict)
     print("Saved outputs to {}".format(save_path))
 
