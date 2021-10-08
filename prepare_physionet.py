@@ -91,7 +91,7 @@ def main():
 
         raw = read_raw_edf(psg_fnames[i], preload=True, stim_channel=None)
         sampling_rate = raw.info['sfreq']
-        raw_ch_df = raw.to_data_frame(scaling_time=100.0)[select_ch]
+        raw_ch_df = raw.to_data_frame(scalings=100.0)[select_ch]
         raw_ch_df = raw_ch_df.to_frame()
         raw_ch_df.set_index(np.arange(len(raw_ch_df)))
 
